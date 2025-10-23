@@ -15,26 +15,35 @@ app.use(helmet());
 // CORS configuration - allow both local and production
 const allowedOrigins = [
   'http://localhost:3000',
+  'https://ns-fitness.vercel.app',
   process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('🔍 CORS Request from origin:', origin);
+    
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     
     // Check if origin matches allowed origins OR is a Vercel preview/deployment URL
     const isAllowed = allowedOrigins.indexOf(origin) !== -1;
     const isVercelDomain = origin && origin.includes('vercel.app');
+    const isRenderDomain = origin && origin.includes('onrender.com');
     const isDevelopment = process.env.NODE_ENV === 'development';
     
-    if (isAllowed || isVercelDomain || isDevelopment) {
+    if (isAllowed || isVercelDomain || isRenderDomain || isDevelopment) {
+      console.log('✅ CORS allowed for:', origin);
       callback(null, true);
     } else {
+      console.log('❌ CORS blocked for:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
 
 // Rate limiting (disabled for development)
