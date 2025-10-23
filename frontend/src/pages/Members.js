@@ -995,13 +995,20 @@ const Members = () => {
                   />
                 </div>
                 <div>
-                  <label className="label">Date of Birth</label>
+                  <label className="label">Date of Birth (Optional)</label>
                   <input
                     type="date"
-                    value={formData.dateOfBirth}
+                    value={formData.dateOfBirth || ''}
                     onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
                     className="input-field"
                   />
+                  {formData.dateOfBirth && (
+                    <p className="text-xs text-green-600 mt-1">
+                      ✓ Saved: {new Date(formData.dateOfBirth).toLocaleDateString('en-IN', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                      })}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="label">Gender</label>

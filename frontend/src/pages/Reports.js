@@ -6,6 +6,7 @@ import { Line, Bar, Doughnut } from 'react-chartjs-2';
 const Reports = () => {
   const [salesData, setSalesData] = useState(null);
   const [memberData, setMemberData] = useState(null);
+  const [monthlyBreakdown, setMonthlyBreakdown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -43,6 +44,23 @@ const Reports = () => {
           active: data.data.members.active,
           inactive: data.data.members.expired
         });
+
+        // Calculate monthly breakdown from revenue chart
+        if (data.data.revenueChart && data.data.revenueChart.length > 0) {
+          const breakdown = data.data.revenueChart.map((item, index, arr) => {
+            const prevRevenue = index > 0 ? arr[index - 1].revenue : 0;
+            const growth = prevRevenue > 0 
+              ? (((item.revenue - prevRevenue) / prevRevenue) * 100).toFixed(1)
+              : item.revenue > 0 ? 100 : 0;
+            
+            return {
+              month: item.month,
+              revenue: item.revenue || 0,
+              growth: parseFloat(growth)
+            };
+          });
+          setMonthlyBreakdown(breakdown);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch reports data:', error);
@@ -584,6 +602,101 @@ const Reports = () => {
           </div>
         </div>
       </div>
+
+      {/* Monthly Sales Breakdown */}
+      {monthlyBreakdown && monthlyBreakdown.length > 0 && (
+        <div className="card mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900">Monthly Sales Breakdown (Last 12 Months)</h3>
+            <Calendar className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Month
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Revenue
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Growth
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trend
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {monthlyBreakdown.map((item, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{item.month}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">
+                        ₹{item.revenue.toLocaleString('en-IN')}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`text-sm font-medium ${
+                        item.growth > 0 ? 'text-green-600' : item.growth < 0 ? 'text-red-600' : 'text-gray-600'
+                      }`}>
+                        {item.growth > 0 ? '+' : ''}{item.growth}%
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {item.growth > 0 ? (
+                          <span className="text-green-600">📈 Growing</span>
+                        ) : item.growth < 0 ? (
+                          <span className="text-red-600">📉 Declining</span>
+                        ) : (
+                          <span className="text-gray-600">➖ Stable</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Summary Stats */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-500">Best Month</p>
+                <p className="text-lg font-semibold text-green-600">
+                  {monthlyBreakdown.reduce((best, curr) => 
+                    curr.revenue > best.revenue ? curr : best, monthlyBreakdown[0]
+                  )?.month || 'N/A'}
+                </p>
+                <p className="text-sm text-gray-600">
+                  ₹{(monthlyBreakdown.reduce((best, curr) => 
+                    curr.revenue > best.revenue ? curr : best, monthlyBreakdown[0]
+                  )?.revenue || 0).toLocaleString('en-IN')}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-500">Average Monthly</p>
+                <p className="text-lg font-semibold text-blue-600">
+                  ₹{Math.round(
+                    monthlyBreakdown.reduce((sum, item) => sum + item.revenue, 0) / monthlyBreakdown.length
+                  ).toLocaleString('en-IN')}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-500">Total (12 Months)</p>
+                <p className="text-lg font-semibold text-purple-600">
+                  ₹{monthlyBreakdown.reduce((sum, item) => sum + item.revenue, 0).toLocaleString('en-IN')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
