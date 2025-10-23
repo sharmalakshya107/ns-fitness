@@ -178,6 +178,12 @@ const Payments = () => {
         }
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to delete payment');
+        return;
+      }
+
       const data = await response.json();
       if (data.success) {
         toast.success('Payment deleted successfully');
@@ -187,7 +193,7 @@ const Payments = () => {
       }
     } catch (error) {
       console.error('Failed to delete payment:', error);
-      toast.error('Failed to delete payment');
+      toast.error('Failed to delete payment: ' + error.message);
     }
   };
 
