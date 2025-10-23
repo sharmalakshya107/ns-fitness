@@ -349,7 +349,7 @@ const Payments = () => {
               </div>
               <div class="detail-row">
                 <span class="detail-label">Processed By:</span>
-                <span class="detail-value">${payment.processor?.full_name || payment.processor?.username || 'N/A'} (${payment.processor?.role === 'main_admin' ? 'Main Admin' : 'Sub Admin'})</span>
+                <span class="detail-value">${payment.processor?.full_name || payment.processor?.username || 'N/A'}</span>
               </div>
             </div>
             
