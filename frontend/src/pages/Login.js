@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getApiUrl } from '../config';
+import { API_URL } from '../config';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(getApiUrl('/api/auth/login'), {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
