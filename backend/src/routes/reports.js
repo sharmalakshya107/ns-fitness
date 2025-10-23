@@ -45,8 +45,15 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     const monthlySales = monthlySalesData || 0;
     
     // Calculate previous month for growth
+    // JavaScript Date handles negative months correctly (e.g., month -1 = Dec of previous year)
     const firstDayOfLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
     const lastDayOfLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+    
+    console.log('Date range for last month:', {
+      from: firstDayOfLastMonth.toISOString().split('T')[0],
+      to: lastDayOfLastMonth.toISOString().split('T')[0]
+    });
+    
     const lastMonthSalesData = await Payment.sum('amount', {
       where: {
         is_active: true,
@@ -56,7 +63,15 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
       }
     }).catch(err => 0);
     const lastMonthSales = lastMonthSalesData || 0;
-    const monthlyGrowth = lastMonthSales > 0 ? (((monthlySales - lastMonthSales) / lastMonthSales) * 100).toFixed(1) : 0;
+    
+    // Calculate growth percentage
+    let monthlyGrowth = 0;
+    if (lastMonthSales > 0) {
+      monthlyGrowth = (((monthlySales - lastMonthSales) / lastMonthSales) * 100).toFixed(1);
+    } else if (monthlySales > 0) {
+      // If last month had 0 sales but current month has sales, show as 100% growth
+      monthlyGrowth = 100;
+    }
 
     console.log('Sales stats:', { totalSales, monthlySales, monthlyGrowth });
 
