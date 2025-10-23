@@ -145,7 +145,7 @@ Instance Type: Free
 ```env
 NODE_ENV = production
 
-DATABASE_URL = postgresql://neondb_owner:npg_2Bwi1XVgZUIu@ep-frosty-heart-a1rwsr9n-pooler.ap-southeast-1.aws.neon.tech/ns_fitness?sslmode=require
+DATABASE_URL = YOUR_NEON_DATABASE_URL_HERE
 
 JWT_SECRET = ns_fitness_production_secret_key_2024_render_xYz9pQm
 
