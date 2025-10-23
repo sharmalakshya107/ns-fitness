@@ -428,6 +428,13 @@ const Members = () => {
           }
           @media print {
             .no-print { display: none; }
+            body { margin: 0; padding: 20px; }
+            .header { page-break-after: avoid; }
+            .member-info { page-break-inside: avoid; }
+            .section-title { page-break-after: avoid; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            .footer { page-break-before: avoid; margin-top: 20px; padding-top: 15px; }
           }
         </style>
       </head>

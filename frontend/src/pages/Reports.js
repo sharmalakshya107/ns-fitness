@@ -172,9 +172,14 @@ const Reports = () => {
             color: #666;
           }
           @media print {
-            .no-print {
-              display: none;
-            }
+            .no-print { display: none; }
+            body { margin: 0; padding: 20px; }
+            .header { page-break-after: avoid; }
+            .summary { page-break-inside: avoid; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th { page-break-after: avoid; }
+            .footer { page-break-before: avoid; margin-top: 20px; font-size: 11px; }
           }
         </style>
       </head>
@@ -300,9 +305,14 @@ const Reports = () => {
             color: #666;
           }
           @media print {
-            .no-print {
-              display: none;
-            }
+            .no-print { display: none; }
+            body { margin: 0; padding: 20px; }
+            .header { page-break-after: avoid; }
+            .summary { page-break-inside: avoid; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th { page-break-after: avoid; }
+            .footer { page-break-before: avoid; margin-top: 20px; font-size: 11px; }
           }
         </style>
       </head>

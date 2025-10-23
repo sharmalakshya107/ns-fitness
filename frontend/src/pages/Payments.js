@@ -300,13 +300,33 @@ const Payments = () => {
               body {
                 background: white;
                 margin: 0;
+                padding: 0;
               }
               .receipt {
                 box-shadow: none;
                 padding: 20px;
+                page-break-inside: avoid;
               }
               .print-button {
                 display: none;
+              }
+              .header {
+                page-break-after: avoid;
+              }
+              .details {
+                page-break-inside: avoid;
+              }
+              .amount-section {
+                page-break-inside: avoid;
+                margin: 20px 0;
+              }
+              .footer {
+                page-break-before: avoid;
+                margin-top: 20px;
+                padding-top: 15px;
+              }
+              .footer p {
+                margin: 5px 0;
               }
             }
           </style>
@@ -360,9 +380,8 @@ const Payments = () => {
             
             <div class="footer">
               <p><strong>Thank you for your payment!</strong></p>
-              <p>This is a computer-generated receipt.</p>
-              <p>For any queries, please contact gym administration.</p>
-              <p style="margin-top: 20px;">Generated on: ${new Date().toLocaleString('en-IN')}</p>
+              <p style="font-size: 12px;">This is a computer-generated receipt. For any queries, please contact gym administration.</p>
+              <p style="font-size: 11px; margin-top: 10px;">Generated: ${new Date().toLocaleString('en-IN')}</p>
             </div>
             
             <button class="print-button" onclick="window.print()">🖨️ Print Receipt</button>
