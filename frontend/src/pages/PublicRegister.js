@@ -259,15 +259,6 @@ const PublicRegister = () => {
               </button>
             </div>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already a member?{' '}
-              <a href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-                Admin Login
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     </div>
