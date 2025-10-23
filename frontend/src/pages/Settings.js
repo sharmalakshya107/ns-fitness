@@ -49,7 +49,7 @@ const Settings = () => {
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/auth/me', {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -79,7 +79,7 @@ const Settings = () => {
       const token = localStorage.getItem('token');
       console.log('Updating profile with data:', profileData);
       
-      const response = await fetch('${API_URL}/api/auth/me', {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -117,7 +117,7 @@ const Settings = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/auth/change-password', {
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -150,7 +150,7 @@ const Settings = () => {
   const fetchSubAdmins = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/admin/sub-admins', {
+      const response = await fetch(`${API_URL}/api/admin/sub-admins`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -182,7 +182,7 @@ const Settings = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/admin/sub-admins', {
+      const response = await fetch(`${API_URL}/api/admin/sub-admins`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

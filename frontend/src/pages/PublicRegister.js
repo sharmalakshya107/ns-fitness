@@ -23,7 +23,7 @@ const PublicRegister = () => {
 
   const fetchBatches = async () => {
     try {
-      const response = await fetch('${API_URL}/api/public/batches');
+      const response = await fetch(`${API_URL}/api/public/batches`);
       if (response.ok) {
         const data = await response.json();
         setBatches(data.data.batches || []);
@@ -45,7 +45,7 @@ const PublicRegister = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('${API_URL}/api/public/register-member', {
+      const response = await fetch(`${API_URL}/api/public/register-member`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

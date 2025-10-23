@@ -20,7 +20,7 @@ const Attendance = () => {
   const fetchBatches = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/batches', {
+      const response = await fetch(`${API_URL}/api/batches`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ const Attendance = () => {
         checkOutTime: null
       }];
 
-      const response = await fetch('${API_URL}/api/attendance/mark', {
+      const response = await fetch(`${API_URL}/api/attendance/mark`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -196,7 +196,7 @@ const Attendance = () => {
         checkOutTime: null
       }));
 
-      const response = await fetch('${API_URL}/api/attendance/mark', {
+      const response = await fetch(`${API_URL}/api/attendance/mark`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -98,7 +98,7 @@ const Members = () => {
   const fetchBatches = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/batches', {
+      const response = await fetch(`${API_URL}/api/batches`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -123,7 +123,7 @@ const Members = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/members', {
+      const response = await fetch(`${API_URL}/api/members`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

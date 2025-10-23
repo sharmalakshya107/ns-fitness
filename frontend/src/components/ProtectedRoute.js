@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
         }
 
         // Verify token with backend
-        const response = await fetch('${API_URL}/api/auth/me', {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

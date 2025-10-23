@@ -57,7 +57,7 @@ const Reports = () => {
       
       if (type === 'sales') {
         // Fetch all payments for export
-        const response = await fetch('${API_URL}/api/payments?limit=10000', {
+        const response = await fetch(`${API_URL}/api/payments?limit=10000`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ const Reports = () => {
         }
       } else if (type === 'members') {
         // Fetch all members for export
-        const response = await fetch('${API_URL}/api/members?limit=10000', {
+        const response = await fetch(`${API_URL}/api/members?limit=10000`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

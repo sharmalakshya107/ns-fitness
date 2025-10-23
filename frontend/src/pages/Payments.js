@@ -84,7 +84,7 @@ const Payments = () => {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/members', {
+      const response = await fetch(`${API_URL}/api/members`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ const Payments = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/payments', {
+      const response = await fetch(`${API_URL}/api/payments`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

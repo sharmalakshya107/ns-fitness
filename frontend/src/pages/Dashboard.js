@@ -56,7 +56,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/reports/dashboard', {
+      const response = await fetch(`${API_URL}/api/reports/dashboard`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       
       // Fetch recent members
-      const membersResponse = await fetch('${API_URL}/api/members?limit=5', {
+      const membersResponse = await fetch(`${API_URL}/api/members?limit=5`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (membersResponse.ok) {
@@ -89,7 +89,7 @@ const Dashboard = () => {
       }
 
       // Fetch recent payments
-      const paymentsResponse = await fetch('${API_URL}/api/payments?limit=5', {
+      const paymentsResponse = await fetch(`${API_URL}/api/payments?limit=5`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (paymentsResponse.ok) {
@@ -104,7 +104,7 @@ const Dashboard = () => {
   const fetchExpiringMembers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('${API_URL}/api/members?status=expiring_soon', {
+      const response = await fetch(`${API_URL}/api/members?status=expiring_soon`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
