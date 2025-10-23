@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { UserPlus, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -22,7 +23,7 @@ const PublicRegister = () => {
 
   const fetchBatches = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/public/batches');
+      const response = await fetch('${API_URL}/api/public/batches');
       if (response.ok) {
         const data = await response.json();
         setBatches(data.data.batches || []);
@@ -44,7 +45,7 @@ const PublicRegister = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/public/register-member', {
+      const response = await fetch('${API_URL}/api/public/register-member', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

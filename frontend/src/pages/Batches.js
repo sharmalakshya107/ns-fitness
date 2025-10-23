@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { Plus, Edit, Trash2, Users, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -24,7 +25,7 @@ const Batches = () => {
   const fetchBatches = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/batches', {
+      const response = await fetch('${API_URL}/api/batches', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -58,7 +59,7 @@ const Batches = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/batches', {
+      const response = await fetch('${API_URL}/api/batches', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -86,7 +87,7 @@ const Batches = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/batches/${selectedBatch.id}`, {
+      const response = await fetch(`${API_URL}/api/batches/${selectedBatch.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -118,7 +119,7 @@ const Batches = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/batches/${batchId}`, {
+      const response = await fetch(`${API_URL}/api/batches/${batchId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { 
   Plus, 
   Search, 
@@ -61,7 +62,7 @@ const Payments = () => {
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
 
-      const response = await fetch(`http://localhost:5000/api/payments?${params}`, {
+      const response = await fetch(`${API_URL}/api/payments?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -83,7 +84,7 @@ const Payments = () => {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/members', {
+      const response = await fetch('${API_URL}/api/members', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -112,7 +113,7 @@ const Payments = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/payments', {
+      const response = await fetch('${API_URL}/api/payments', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,7 +170,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/payments/${paymentId}`, {
+      const response = await fetch(`${API_URL}/api/payments/${paymentId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

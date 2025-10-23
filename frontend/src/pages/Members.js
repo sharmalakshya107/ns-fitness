@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { 
   Plus, 
   Search, 
@@ -75,7 +76,7 @@ const Members = () => {
       if (filterStatus) params.append('status', filterStatus);
       if (filterBatch) params.append('batchId', filterBatch);
 
-      const response = await fetch(`http://localhost:5000/api/members?${params}`, {
+      const response = await fetch(`${API_URL}/api/members?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -97,7 +98,7 @@ const Members = () => {
   const fetchBatches = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/batches', {
+      const response = await fetch('${API_URL}/api/batches', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -122,7 +123,7 @@ const Members = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/members', {
+      const response = await fetch('${API_URL}/api/members', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -157,7 +158,7 @@ const Members = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/members/${selectedMember.id}`, {
+      const response = await fetch(`${API_URL}/api/members/${selectedMember.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -189,7 +190,7 @@ const Members = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/members/${memberId}`, {
+      const response = await fetch(`${API_URL}/api/members/${memberId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -221,7 +222,7 @@ const Members = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/members/${selectedMember.id}/freeze`, {
+      const response = await fetch(`${API_URL}/api/members/${selectedMember.id}/freeze`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -249,7 +250,7 @@ const Members = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/members/${selectedMember.id}/unfreeze`, {
+      const response = await fetch(`${API_URL}/api/members/${selectedMember.id}/unfreeze`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -295,7 +296,7 @@ const Members = () => {
       const token = localStorage.getItem('token');
       
       // Fetch attendance history for this member (get all records, no pagination limit)
-      const attendanceResponse = await fetch(`http://localhost:5000/api/attendance?memberId=${member.id}&limit=1000`, {
+      const attendanceResponse = await fetch(`${API_URL}/api/attendance?memberId=${member.id}&limit=1000`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -303,7 +304,7 @@ const Members = () => {
       });
       
       // Fetch payment history for this member (get all records, no pagination limit)
-      const paymentsResponse = await fetch(`http://localhost:5000/api/payments?memberId=${member.id}&limit=1000`, {
+      const paymentsResponse = await fetch(`${API_URL}/api/payments?memberId=${member.id}&limit=1000`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

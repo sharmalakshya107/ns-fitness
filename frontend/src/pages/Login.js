@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getApiUrl } from '../services/api';
+import { getApiUrl } from '../config';
 
 const Login = () => {
   const [formData, setFormData] = useState({

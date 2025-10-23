@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { BarChart3, Download, Calendar, DollarSign, Users } from 'lucide-react';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 
@@ -20,7 +21,7 @@ const Reports = () => {
       const token = localStorage.getItem('token');
       
       // Fetch dashboard data instead (has all the stats we need)
-      const dashboardResponse = await fetch(`http://localhost:5000/api/reports/dashboard`, {
+      const dashboardResponse = await fetch(`${API_URL}/api/reports/dashboard`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -56,7 +57,7 @@ const Reports = () => {
       
       if (type === 'sales') {
         // Fetch all payments for export
-        const response = await fetch('http://localhost:5000/api/payments?limit=10000', {
+        const response = await fetch('${API_URL}/api/payments?limit=10000', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -75,7 +76,7 @@ const Reports = () => {
         }
       } else if (type === 'members') {
         // Fetch all members for export
-        const response = await fetch('http://localhost:5000/api/members?limit=10000', {
+        const response = await fetch('${API_URL}/api/members?limit=10000', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
