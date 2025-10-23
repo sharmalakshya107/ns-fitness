@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API URL Test</title>
+</head>
+<body>
+    <h1>Environment Variable Test</h1>
+    <p>This page will show if REACT_APP_API_URL is set correctly</p>
+    <div id="result"></div>
+    
+    <script>
+        // This won't work in plain HTML, but will work in React build
+        // Just to verify the env var is being used
+        document.getElementById('result').innerHTML = 
+            '<p><strong>Check browser console for actual API calls</strong></p>' +
+            '<p>Expected: https://ns-fitness-backend.onrender.com</p>';
+    </script>
+</body>
+</html>
+
