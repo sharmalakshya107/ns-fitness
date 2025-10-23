@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables (CRITICAL - NEVER COMMIT!)
+.env
+.env.local
+.env.production
+.env.development
+backend/.env
+frontend/.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Uploads
+uploads/
+*.csv
+*.xlsx
+
+# Backups
+backups/
+*.backup
+*.bak
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Credentials (NEVER COMMIT!)
+credentials.json
+service-account.json
+*.pem
+*.key
+*.cert
+
+# Sensitive docs
+TODO_PRIVATE.md
+CREDENTIALS.md
+SECRETS.md
+
+

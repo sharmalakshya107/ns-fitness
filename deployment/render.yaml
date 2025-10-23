@@ -1,0 +1,50 @@
+# NS Fitness - Render Deployment Configuration
+
+# Backend Service Configuration
+services:
+  - type: web
+    name: ns-fitness-backend
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: FRONTEND_URL
+        value: https://your-frontend-domain.vercel.app
+      - key: DB_HOST
+        value: your-database-host
+      - key: DB_PORT
+        value: 3306
+      - key: DB_NAME
+        value: ns_fitness
+      - key: DB_USER
+        value: your-db-user
+      - key: DB_PASSWORD
+        value: your-db-password
+      - key: JWT_SECRET
+        value: your-super-secret-jwt-key
+      - key: TWILIO_ACCOUNT_SID
+        value: your-twilio-sid
+      - key: TWILIO_AUTH_TOKEN
+        value: your-twilio-token
+      - key: TWILIO_WHATSAPP_NUMBER
+        value: +14155238886
+      - key: GYM_NAME
+        value: NS Fitness
+      - key: GYM_PHONE
+        value: +91-XXXXXXXXXX
+      - key: GYM_ADDRESS
+        value: Your Gym Address
+      - key: GYM_EMAIL
+        value: info@nsfitness.com
+
+# Database Configuration
+databases:
+  - name: ns-fitness-db
+    plan: starter
+    databaseName: ns_fitness
+    user: ns_fitness_user

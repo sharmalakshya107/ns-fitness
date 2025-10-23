@@ -1,0 +1,34 @@
+# NS Fitness Backend - Railway Deployment Configuration
+
+# Build Configuration
+build:
+  builder: NIXPACKS
+  buildCommand: npm install
+
+# Start Configuration  
+start:
+  command: npm start
+
+# Environment Variables (set these in Railway dashboard)
+# NODE_ENV=production
+# PORT=5000
+# FRONTEND_URL=https://your-frontend-domain.vercel.app
+# DB_HOST=your-database-host
+# DB_PORT=3306
+# DB_NAME=ns_fitness
+# DB_USER=your-db-user
+# DB_PASSWORD=your-db-password
+# JWT_SECRET=your-super-secret-jwt-key
+# TWILIO_ACCOUNT_SID=your-twilio-sid
+# TWILIO_AUTH_TOKEN=your-twilio-token
+# TWILIO_WHATSAPP_NUMBER=+14155238886
+# GYM_NAME=NS Fitness
+# GYM_PHONE=+91-XXXXXXXXXX
+# GYM_ADDRESS=Your Gym Address
+# GYM_EMAIL=info@nsfitness.com
+
+# Health Check
+healthcheck:
+  path: /health
+  timeout: 30s
+  interval: 60s

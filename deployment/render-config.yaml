@@ -1,0 +1,33 @@
+# NS Fitness Backend - Render Deployment Configuration
+
+# Build Configuration
+build:
+  builder: NIXPACKS
+  buildCommand: npm install
+
+# Start Configuration  
+start:
+  command: npm start
+
+# Environment Variables (set these in Render dashboard)
+# NODE_ENV=production
+# PORT=5000
+# FRONTEND_URL=https://your-frontend-domain.vercel.app
+# DATABASE_URL=postgresql://username:password@hostname:port/database?sslmode=require
+# JWT_SECRET=your-super-secret-jwt-key-change-in-production
+# TWILIO_ACCOUNT_SID=your-twilio-sid
+# TWILIO_AUTH_TOKEN=your-twilio-token
+# TWILIO_WHATSAPP_NUMBER=+14155238886
+# GYM_NAME=NS Fitness
+# GYM_PHONE=+91-XXXXXXXXXX
+# GYM_ADDRESS=Your Gym Address
+# GYM_EMAIL=info@nsfitness.com
+
+# Health Check
+healthcheck:
+  path: /health
+  timeout: 30s
+  interval: 60s
+
+# Auto Deploy
+autoDeploy: true
