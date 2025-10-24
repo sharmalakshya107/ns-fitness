@@ -10,7 +10,8 @@ import {
   TrendingDown,
   Calendar,
   DollarSign,
-  Lock
+  Lock,
+  Cake
 } from 'lucide-react';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
@@ -45,12 +46,14 @@ const Dashboard = () => {
   const [recentMembers, setRecentMembers] = useState([]);
   const [recentPayments, setRecentPayments] = useState([]);
   const [expiringMembers, setExpiringMembers] = useState([]);
+  const [birthdays, setBirthdays] = useState({ today: [], tomorrow: [] });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
     fetchRecentActivity();
     fetchExpiringMembers();
+    fetchBirthdays();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -113,6 +116,25 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Failed to fetch expiring members:', error);
+    }
+  };
+
+  const fetchBirthdays = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/reports/birthdays`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBirthdays(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch birthdays:', error);
     }
   };
 
@@ -278,6 +300,56 @@ const Dashboard = () => {
           );
         })}
       </div>
+
+      {/* Birthday Card */}
+      {(birthdays.today.length > 0 || birthdays.tomorrow.length > 0) && (
+        <div className="card bg-gradient-to-r from-pink-50 to-purple-50 border-l-4 border-pink-500">
+          <div className="flex items-center mb-4">
+            <Cake className="h-6 w-6 text-pink-600 mr-2" />
+            <h3 className="text-lg font-bold text-gray-900">🎉 Upcoming Birthdays</h3>
+          </div>
+          
+          {birthdays.today.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold text-pink-700 mb-2">🎂 Today's Birthdays:</h4>
+              <div className="space-y-2">
+                {birthdays.today.map(member => (
+                  <div key={member.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
+                    <div>
+                      <p className="font-medium text-gray-900">{member.name}</p>
+                      <p className="text-xs text-gray-500">📞 {member.phone}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-pink-600">{member.age} yrs</p>
+                      <p className="text-xs text-gray-500">Wish them! 🎉</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {birthdays.tomorrow.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-purple-700 mb-2">🎈 Tomorrow's Birthdays:</h4>
+              <div className="space-y-2">
+                {birthdays.tomorrow.map(member => (
+                  <div key={member.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
+                    <div>
+                      <p className="font-medium text-gray-900">{member.name}</p>
+                      <p className="text-xs text-gray-500">📞 {member.phone}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-purple-600">{member.age} yrs</p>
+                      <p className="text-xs text-gray-500">Prepare! 🎂</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

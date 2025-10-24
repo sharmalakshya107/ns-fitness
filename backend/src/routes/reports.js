@@ -338,4 +338,75 @@ router.get('/members', authenticateToken, requireMainAdmin, async (req, res) => 
   }
 });
 
+// Get upcoming birthdays (today and tomorrow)
+router.get('/birthdays', authenticateToken, async (req, res) => {
+  try {
+    const { getISTDate } = require('../utils/timezone');
+    
+    // Get all active members with DOB
+    const members = await Member.findAll({
+      where: {
+        is_active: true,
+        date_of_birth: { [Op.ne]: null }
+      },
+      attributes: ['id', 'name', 'phone', 'email', 'date_of_birth'],
+      order: [['name', 'ASC']]
+    });
+
+    const today = new Date(getISTDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayBirthdays = [];
+    const tomorrowBirthdays = [];
+
+    members.forEach(member => {
+      if (!member.date_of_birth) return;
+      
+      const dob = new Date(member.date_of_birth);
+      const birthdayThisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+      
+      // Check if birthday is today
+      if (birthdayThisYear.getDate() === today.getDate() && 
+          birthdayThisYear.getMonth() === today.getMonth()) {
+        const age = today.getFullYear() - dob.getFullYear();
+        todayBirthdays.push({
+          id: member.id,
+          name: member.name,
+          phone: member.phone,
+          age: age,
+          date: member.date_of_birth
+        });
+      }
+      
+      // Check if birthday is tomorrow
+      if (birthdayThisYear.getDate() === tomorrow.getDate() && 
+          birthdayThisYear.getMonth() === tomorrow.getMonth()) {
+        const age = tomorrow.getFullYear() - dob.getFullYear();
+        tomorrowBirthdays.push({
+          id: member.id,
+          name: member.name,
+          phone: member.phone,
+          age: age,
+          date: member.date_of_birth
+        });
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        today: todayBirthdays,
+        tomorrow: tomorrowBirthdays
+      }
+    });
+  } catch (error) {
+    console.error('Get birthdays error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch birthdays'
+    });
+  }
+});
+
 module.exports = router;
