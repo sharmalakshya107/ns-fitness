@@ -119,20 +119,14 @@ function CheckInSuccess() {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-3">
+        {/* Action Button */}
+        <div>
           <button
             onClick={() => navigate('/check-in')}
-            className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors"
+            className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors shadow-lg"
           >
-            Done
+            ✓ Done
           </button>
-          <a
-            href="/register"
-            className="block text-center w-full py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border border-gray-300 transition-colors"
-          >
-            New Member? Register Here
-          </a>
         </div>
 
         {/* Footer Message */}
