@@ -104,7 +104,25 @@ function SelfCheckIn() {
           });
         }, 1000);
       } else {
-        toast.error(data.message || 'Failed to mark attendance');
+        // Show detailed error message
+        const errorMessage = data.message || 'Failed to mark attendance';
+        
+        // Create a more visible error display for expired/blocked members
+        if (errorMessage.includes('expired') || errorMessage.includes('trial period')) {
+          toast.error(errorMessage, {
+            duration: 6000,
+            style: {
+              background: '#FEE2E2',
+              color: '#991B1B',
+              fontWeight: '600',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '2px solid #DC2626'
+            }
+          });
+        } else {
+          toast.error(errorMessage);
+        }
       }
     } catch (error) {
       console.error('Check-in error:', error);
