@@ -22,8 +22,13 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // Helper function to check if current time is within batch time
 function getAttendanceStatus(batchStartTime, batchEndTime) {
+  // Get current time in Indian Standard Time (IST = UTC+5:30)
   const now = new Date();
-  const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+  const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+  const istTime = new Date(now.getTime() + istOffset);
+  const currentTime = istTime.toISOString().split('T')[1].substring(0, 5); // HH:MM format in IST
+  
+  console.log(`⏰ Current IST time: ${currentTime}, Batch: ${batchStartTime} - ${batchEndTime}`);
   
   // If within batch time → present
   if (currentTime >= batchStartTime && currentTime <= batchEndTime) {
@@ -217,7 +222,10 @@ router.post('/self-checkin', [
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
 
     // Step 7: Mark attendance
-    const checkInTime = new Date(); // Full date-time object for database
+    // Get current time in Indian Standard Time (IST)
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+    const checkInTime = new Date(now.getTime() + istOffset); // Convert to IST
     
     let attendance;
     try {
