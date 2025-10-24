@@ -150,13 +150,16 @@ function SelfCheckIn() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number *
               </label>
               <input
                 type="tel"
+                name="phone"
+                id="phone"
+                autoComplete="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 placeholder="Enter your phone number"
@@ -171,6 +174,9 @@ function SelfCheckIn() {
               </label>
               <input
                 type="email"
+                name="email"
+                id="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 placeholder="Enter your email"
