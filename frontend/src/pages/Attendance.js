@@ -727,10 +727,10 @@ const Attendance = () => {
                     <div className="text-xs text-gray-400 italic px-3 py-1">
                       Future date - Cannot mark
                     </div>
-                  ) : member.payment_status === 'overdue' || member.payment_status === 'pending' || member.membership_status === 'expired' || member.membership_status === 'frozen' ? (
+                  ) : member.membership_status === 'expired' || member.membership_status === 'frozen' ? (
                     <div className="text-xs text-red-500 italic px-3 py-1 flex items-center gap-1">
                       <XCircle className="h-3 w-3" />
-                      No Active Payment
+                      {member.membership_status === 'expired' ? 'Membership Expired' : 'Membership Frozen'}
                     </div>
                   ) : (
                     <>
