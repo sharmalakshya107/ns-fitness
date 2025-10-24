@@ -92,6 +92,34 @@ function CheckInSuccess() {
             </div>
           </div>
 
+          {/* Membership Info */}
+          {data.endDate && data.membershipStatus !== 'pending' && (
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Membership Expires</p>
+                  <p className="font-semibold text-gray-800">
+                    {new Date(data.endDate).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+                {data.membershipStatus === 'active' && (
+                  <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                    Active
+                  </span>
+                )}
+                {data.membershipStatus === 'expiring_soon' && (
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                    Expiring Soon
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Birthday Message */}
           {data.birthdayMessage && (
             <div className="mt-6 p-6 bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-300 rounded-lg">
@@ -101,6 +129,39 @@ function CheckInSuccess() {
               <p className="text-center text-gray-700 whitespace-pre-line">
                 {data.birthdayMessage.message}
               </p>
+            </div>
+          )}
+
+          {/* Expiry Warning (Expiring within 7 days) */}
+          {data.expiryWarning && (
+            <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+              <h3 className="text-lg font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                ⚠️ Renewal Reminder
+              </h3>
+              <div className="space-y-2 text-sm text-yellow-900">
+                <p className="font-semibold text-base text-red-600">
+                  {data.expiryWarning.message}
+                </p>
+                <p className="mt-2">
+                  Expiry Date: <span className="font-bold">
+                    {new Date(data.expiryWarning.expiryDate).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </span>
+                </p>
+                <p className="mt-3">
+                  Renew now to avoid any interruption in your gym access!
+                </p>
+                <div className="mt-4 pt-4 border-t border-yellow-200 bg-yellow-100 -mx-4 -mb-4 p-4 rounded-b-lg">
+                  <p className="font-semibold text-center">
+                    📞 Renew Now - Contact:<br />
+                    <span className="text-lg">Nagendra Sain (Bunty)</span><br />
+                    <span className="text-sm">📱 +91-7737326829</span>
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 

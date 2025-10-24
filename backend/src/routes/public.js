@@ -427,6 +427,24 @@ router.post('/self-checkin', [
       }
     }
 
+    // Check for expiry warning (if expiring within 7 days)
+    let expiryWarning = null;
+    if (member.end_date && member.membership_status !== 'pending') {
+      const endDate = new Date(member.end_date);
+      const todayDate = new Date(today);
+      const daysUntilExpiry = Math.ceil((endDate - todayDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilExpiry >= 0 && daysUntilExpiry <= 7) {
+        expiryWarning = {
+          daysRemaining: daysUntilExpiry,
+          expiryDate: member.end_date,
+          message: daysUntilExpiry === 0 ? 'Your membership expires TODAY!' : 
+                   daysUntilExpiry === 1 ? 'Your membership expires TOMORROW!' :
+                   `Your membership expires in ${daysUntilExpiry} days!`
+        };
+      }
+    }
+
     res.json({
       success: true,
       message: message,
@@ -441,7 +459,8 @@ router.post('/self-checkin', [
         endDate: member.end_date,
         lateWarning: lateWarning,
         birthdayMessage: birthdayMessage,
-        trialWarning: trialWarning
+        trialWarning: trialWarning,
+        expiryWarning: expiryWarning
       }
     });
 
