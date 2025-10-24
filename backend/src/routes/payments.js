@@ -14,9 +14,17 @@ router.get('/', authenticateToken, requireSubAdminOrMain, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     
-    const { search, startDate, endDate, paymentMethod, duration } = req.query;
+    const { search, startDate, endDate, paymentMethod, duration, memberId } = req.query;
     
     let whereClause = { is_active: true };
+    
+    // Filter by specific member if memberId is provided
+    if (memberId) {
+      console.log('🔍 Filtering payments by memberId:', memberId);
+      whereClause.member_id = memberId;
+    } else {
+      console.log('🔍 No memberId filter - returning all payments');
+    }
     
     if (startDate && endDate) {
       whereClause.payment_date = {

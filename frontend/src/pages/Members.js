@@ -318,10 +318,25 @@ const Members = () => {
       const attendanceRecords = attendanceData.data?.attendance || [];
       const paymentRecords = paymentsData.data?.payments || [];
       
-      console.log('Attendance records:', attendanceRecords);
-      console.log('Payment records:', paymentRecords);
+      console.log('📊 Downloading report for member:', member.name, 'ID:', member.id);
+      console.log('📊 Fetched Attendance records:', attendanceRecords.length);
+      console.log('📊 Fetched Payment records:', paymentRecords.length);
+      console.log('📊 Payment records details:', paymentRecords);
       
-      generateMemberReport(member, attendanceRecords, paymentRecords);
+      // Double-check: filter payments to ensure only this member's payments
+      const filteredPayments = paymentRecords.filter(p => 
+        p.member_id === member.id || p.memberId === member.id
+      );
+      
+      console.log('📊 After filtering, payments count:', filteredPayments.length);
+      
+      if (filteredPayments.length !== paymentRecords.length) {
+        console.warn('⚠️ Warning: Backend returned payments for other members!');
+        console.log('Expected member ID:', member.id);
+        console.log('All member IDs in response:', [...new Set(paymentRecords.map(p => p.member_id || p.memberId))]);
+      }
+      
+      generateMemberReport(member, attendanceRecords, filteredPayments);
       
     } catch (error) {
       console.error('Failed to generate member report:', error);
