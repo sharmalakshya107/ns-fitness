@@ -86,12 +86,6 @@ const Attendance = () => {
   };
 
   const markAttendance = async (memberId, status) => {
-    // Check if batch is selected
-    if (!selectedBatch) {
-      toast.error('Please select a batch first');
-      return;
-    }
-
     // Prevent marking attendance for future dates
     const today = getISTDate();
     if (selectedDate > today) {
@@ -100,6 +94,18 @@ const Attendance = () => {
     }
 
     try {
+      // Find member to get their batch
+      const member = members.find(m => m.id === memberId);
+      if (!member) {
+        toast.error('Member not found');
+        return;
+      }
+
+      if (!member.batch_id) {
+        toast.error(`${member.name} is not assigned to any batch. Please assign a batch first.`);
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const now = new Date();
       const attendanceData = [{
@@ -116,7 +122,7 @@ const Attendance = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          batchId: parseInt(selectedBatch, 10),
+          batchId: parseInt(member.batch_id, 10),
           date: selectedDate,
           attendance: attendanceData
         })
@@ -124,7 +130,7 @@ const Attendance = () => {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Attendance marked successfully');
+        toast.success(`${member.name} marked as ${status}`);
         fetchAttendance();
       } else {
         toast.error(data.message || 'Failed to mark attendance');
