@@ -100,10 +100,15 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     }
 
     // Get attendance statistics (with error handling)
+    // Note: 'late' counts as present for attendance rate calculation
     let attendanceRate = 0;
     try {
       const totalAttendanceRecords = await Attendance.count();
-      const presentCount = await Attendance.count({ where: { status: 'present' } });
+      const presentCount = await Attendance.count({ 
+        where: { 
+          status: { [Op.in]: ['present', 'late'] } // Count both present and late as present
+        } 
+      });
       attendanceRate = totalAttendanceRecords > 0 ? ((presentCount / totalAttendanceRecords) * 100).toFixed(1) : 0;
     } catch (err) {
       console.log('Attendance data not available:', err.message);

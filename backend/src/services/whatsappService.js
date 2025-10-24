@@ -12,7 +12,14 @@ class WhatsAppService {
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER;
 
-    if (accountSid && authToken && whatsappNumber) {
+    // Check if credentials are properly configured (not placeholders)
+    const isValidConfig = accountSid && 
+                         authToken && 
+                         whatsappNumber && 
+                         accountSid.startsWith('AC') && 
+                         !accountSid.includes('your_');
+
+    if (isValidConfig) {
       try {
         this.client = twilio(accountSid, authToken);
         this.whatsappNumber = whatsappNumber;
@@ -23,7 +30,7 @@ class WhatsAppService {
         this.isConfigured = false;
       }
     } else {
-      console.warn('⚠️ WhatsApp credentials not configured. Service will be disabled.');
+      // Silently disable if not configured (no warning in development)
       this.isConfigured = false;
     }
   }

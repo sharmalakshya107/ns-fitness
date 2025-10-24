@@ -6,6 +6,8 @@ import './styles/index.css';
 // Import pages
 import Login from './pages/Login';
 import PublicRegister from './pages/PublicRegister';
+import SelfCheckIn from './pages/SelfCheckIn';
+import CheckInSuccess from './pages/CheckInSuccess';
 import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Payments from './pages/Payments';
@@ -50,6 +52,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<PublicRegister />} />
+          <Route path="/check-in" element={<SelfCheckIn />} />
+          <Route path="/check-in-success" element={<CheckInSuccess />} />
           
           <Route path="/" element={
             <ProtectedRoute>

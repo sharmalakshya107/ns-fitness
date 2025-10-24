@@ -47,7 +47,7 @@ const Attendance = sequelize.define('Attendance', {
   },
   marked_by: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true, // NULL = self-marked by member
     references: {
       model: 'users',
       key: 'id'

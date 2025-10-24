@@ -159,6 +159,41 @@ const Attendance = () => {
     });
   };
 
+  const autoMarkAllAbsent = async () => {
+    // Prevent marking attendance for future dates
+    const today = new Date().toISOString().split('T')[0];
+    if (selectedDate > today) {
+      toast.error('Cannot mark attendance for future dates!');
+      return;
+    }
+
+    if (!window.confirm('This will auto-mark ALL unmarked active members (across all batches) as absent for today. Continue?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/attendance/auto-mark-absent`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(`✅ ${data.data.markedAbsent} members marked as absent`);
+        fetchAttendance();
+      } else {
+        toast.error(data.message || 'Failed to auto-mark absent');
+      }
+    } catch (error) {
+      console.error('Failed to auto-mark absent:', error);
+      toast.error('Failed to auto-mark absent');
+    }
+  };
+
   const markAllAbsent = async () => {
     if (!selectedBatch) {
       toast.error('Please select a batch first');
@@ -603,13 +638,23 @@ const Attendance = () => {
               Attendance Rate: {members.length > 0 ? Math.round((attendance.filter(a => a.status === 'present').length / members.length) * 100) : 0}%
             </div>
             {members.filter(m => !getAttendanceStatus(m.id)).length > 0 && selectedDate <= new Date().toISOString().split('T')[0] && (
-              <button
-                onClick={markAllAbsent}
-                className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 flex items-center"
-              >
-                <XCircle className="h-4 w-4 mr-2" />
-                Mark {members.filter(m => !getAttendanceStatus(m.id)).length} as Absent
-              </button>
+              <>
+                <button
+                  onClick={markAllAbsent}
+                  className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 flex items-center"
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Mark {members.filter(m => !getAttendanceStatus(m.id)).length} as Absent
+                </button>
+                <button
+                  onClick={autoMarkAllAbsent}
+                  className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 flex items-center"
+                  title="Auto-mark all unmarked active members as absent"
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  Auto Mark Absent (All Batches)
+                </button>
+              </>
             )}
             {selectedDate > new Date().toISOString().split('T')[0] && (
               <div className="text-sm text-orange-600 font-medium">
@@ -659,9 +704,11 @@ const Attendance = () => {
                           Check-in: {formatTime(checkInTime)}
                         </div>
                       )}
-                      {record && record.marker && (
+                      {record && (
                         <div className="text-xs text-blue-600 mt-1">
-                          Marked by: {record.marker.full_name || record.marker.username}
+                          {record.marker 
+                            ? `Marked by: ${record.marker.full_name || record.marker.username}`
+                            : '✓ Marked by Member (Self Check-in)'}
                         </div>
                       )}
                     </div>

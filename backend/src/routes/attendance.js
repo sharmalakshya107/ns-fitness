@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const { Attendance, Member, Batch, User } = require('../models');
 const { authenticateToken, requireSubAdminOrMain } = require('../middleware/auth');
+const { autoMarkAbsent } = require('../utils/auto-mark-absent');
 
 const router = express.Router();
 
@@ -282,6 +283,36 @@ router.get('/export', authenticateToken, requireSubAdminOrMain, async (req, res)
     res.status(500).json({
       success: false,
       message: 'Failed to export attendance data'
+    });
+  }
+});
+
+// Admin endpoint to manually trigger auto-mark absent
+router.post('/auto-mark-absent', authenticateToken, requireSubAdminOrMain, async (req, res) => {
+  try {
+    const result = await autoMarkAbsent();
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: {
+          markedAbsent: result.markedAbsent,
+          memberNames: result.memberNames
+        }
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to auto-mark absent',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Auto-mark absent endpoint error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process auto-mark absent request'
     });
   }
 });
