@@ -187,8 +187,15 @@ router.post('/self-checkin', [
     
     // Check pending members - allow 3-day free trial
     if (member.membership_status === 'pending') {
+      // Get registration date (date only, no time)
       const registrationDate = new Date(member.createdAt);
-      const daysSinceRegistration = Math.ceil((today - registrationDate) / (1000 * 60 * 60 * 24));
+      const regDateOnly = new Date(registrationDate.getFullYear(), registrationDate.getMonth(), registrationDate.getDate());
+      
+      // Get today's date (date only, no time)
+      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      
+      // Calculate days difference (whole days only)
+      const daysSinceRegistration = Math.floor((todayDateOnly - regDateOnly) / (1000 * 60 * 60 * 24)) + 1; // +1 to count registration day as Day 1
       
       if (daysSinceRegistration > 3) {
         return res.status(403).json({
@@ -200,7 +207,7 @@ router.post('/self-checkin', [
       // Within trial period - allow but show remaining days
       trialWarning = {
         daysPassed: daysSinceRegistration,
-        daysRemaining: 3 - daysSinceRegistration,
+        daysRemaining: 4 - daysSinceRegistration, // 4 because if on day 1, should show 3 days left
         totalTrialDays: 3
       };
     }

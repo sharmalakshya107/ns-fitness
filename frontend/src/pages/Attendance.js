@@ -734,8 +734,11 @@ const Attendance = () => {
                       <>
                         {(() => {
                           const regDate = new Date(member.createdAt);
+                          const regDateOnly = new Date(regDate.getFullYear(), regDate.getMonth(), regDate.getDate());
                           const today = new Date();
-                          const daysSinceReg = Math.ceil((today - regDate) / (1000 * 60 * 60 * 24));
+                          const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                          const daysSinceReg = Math.floor((todayDateOnly - regDateOnly) / (1000 * 60 * 60 * 24)) + 1;
+                          
                           if (daysSinceReg > 3) {
                             return (
                               <div className="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
