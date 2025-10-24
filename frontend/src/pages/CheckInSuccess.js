@@ -81,8 +81,8 @@ function CheckInSuccess() {
                 <MapPin className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Distance from Gym</p>
-                <p className="font-semibold text-gray-800">{data.distance} meters</p>
+                <p className="text-sm text-gray-600">Location</p>
+                <p className="font-semibold text-green-600">✓ Verified at Gym</p>
               </div>
             </div>
           </div>
