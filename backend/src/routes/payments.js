@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const { Payment, Member, User } = require('../models');
 const { authenticateToken, requireSubAdminOrMain } = require('../middleware/auth');
 const { updateMemberStatus } = require('../utils/update-member-status');
+const { getISTDateTime, getISTDate } = require('../utils/timezone');
 
 const router = express.Router();
 
@@ -152,7 +153,7 @@ router.post('/', [
 
     // Determine the start date for the new payment period
     let newStartDate;
-    const currentDate = new Date();
+    const currentDate = getISTDateTime(); // Use IST date
     
     // If member has an existing end_date and it's in the future, start from that date
     if (member.end_date) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { Member, Batch, Trainer, Attendance } = require('../models');
+const { getISTDateTime, getISTDate, getISTTime } = require('../utils/timezone');
 
 const router = express.Router();
 
@@ -22,11 +23,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // Helper function to check if current time is within batch time
 function getAttendanceStatus(batchStartTime, batchEndTime) {
-  // Get current time in Indian Standard Time (IST = UTC+5:30)
-  const now = new Date();
-  const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
-  const istTime = new Date(now.getTime() + istOffset);
-  const currentTime = istTime.toISOString().split('T')[1].substring(0, 5); // HH:MM format in IST
+  const currentTime = getISTTime(); // Get current IST time
   
   console.log(`⏰ Current IST time: ${currentTime}, Batch: ${batchStartTime} - ${batchEndTime}`);
   
@@ -192,7 +189,7 @@ router.post('/self-checkin', [
     }
 
     // Step 5: Check if attendance already marked today
-    const today = new Date().toISOString().split('T')[0];
+    const today = getISTDate(); // Get today's date in IST
     
     console.log(`🔍 Checking existing attendance for member ${member.id} on ${today}`);
     
@@ -222,10 +219,7 @@ router.post('/self-checkin', [
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
 
     // Step 7: Mark attendance
-    // Get current time in Indian Standard Time (IST)
-    const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-    const checkInTime = new Date(now.getTime() + istOffset); // Convert to IST
+    const checkInTime = getISTDateTime(); // Get current IST date-time
     
     let attendance;
     try {
