@@ -235,7 +235,7 @@ router.post('/self-checkin', [
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
 
     // Step 7: Mark attendance
-    // Use current time - PostgreSQL will store it with timezone
+    // Get current server time (UTC on Render) - will be stored as-is
     const checkInTime = new Date();
     
     let attendance;
@@ -278,6 +278,14 @@ router.post('/self-checkin', [
       message = `Attendance marked as PRESENT! Welcome to NS Fitness.`;
     }
 
+    // Format check-in time for display (use IST time)
+    const istCheckInTime = getISTDateTime();
+    const displayTime = istCheckInTime.toISOString().substring(11, 16); // HH:MM format
+    const [hours, minutes] = displayTime.split(':');
+    const hour12 = hours === '00' ? 12 : (hours > 12 ? hours - 12 : parseInt(hours));
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedTime = `${hour12}:${minutes} ${ampm}`;
+
     res.json({
       success: true,
       message: message,
@@ -286,7 +294,7 @@ router.post('/self-checkin', [
         status: status,
         batchName: member.batch.name,
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
-        checkInTime: checkInTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
+        checkInTime: formattedTime,
         distance: Math.round(distance),
         lateWarning: lateWarning
       }

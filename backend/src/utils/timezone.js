@@ -1,35 +1,42 @@
 /**
  * Timezone utility for Indian Standard Time (IST)
- * IST = UTC + 5:30
+ * Render servers run on UTC, so we need to convert to IST (UTC+5:30)
  */
 
-const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+const IST_OFFSET_MINUTES = 330; // IST is UTC + 5 hours 30 minutes = 330 minutes
 
 /**
  * Get current date-time in IST
- * @returns {Date} Current date-time adjusted to IST
+ * @returns {Date} Current date-time in IST
  */
 function getISTDateTime() {
   const now = new Date();
-  return new Date(now.getTime() + IST_OFFSET_MS);
+  // Get UTC time and add IST offset
+  const istTime = new Date(now.getTime() + (IST_OFFSET_MINUTES * 60 * 1000));
+  return istTime;
 }
 
 /**
  * Get current date in IST (YYYY-MM-DD format)
- * @returns {string} Current date in IST
+ * Uses local date components after IST conversion
  */
 function getISTDate() {
   const istDateTime = getISTDateTime();
-  return istDateTime.toISOString().split('T')[0];
+  // Extract date components from the IST-adjusted time
+  const year = istDateTime.getUTCFullYear();
+  const month = String(istDateTime.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(istDateTime.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
- * Get current time in IST (HH:MM format)
- * @returns {string} Current time in IST (24-hour format)
+ * Get current time in IST (HH:MM format - 24 hour)
  */
 function getISTTime() {
   const istDateTime = getISTDateTime();
-  return istDateTime.toISOString().split('T')[1].substring(0, 5);
+  const hours = String(istDateTime.getUTCHours()).padStart(2, '0');
+  const minutes = String(istDateTime.getUTCMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 /**
@@ -39,7 +46,7 @@ function getISTTime() {
  */
 function toIST(date) {
   const dateObj = date instanceof Date ? date : new Date(date);
-  return new Date(dateObj.getTime() + IST_OFFSET_MS);
+  return new Date(dateObj.getTime() + (IST_OFFSET_MINUTES * 60 * 1000));
 }
 
 module.exports = {
@@ -47,6 +54,5 @@ module.exports = {
   getISTDate,
   getISTTime,
   toIST,
-  IST_OFFSET_MS
+  IST_OFFSET_MINUTES
 };
-
