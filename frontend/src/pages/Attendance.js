@@ -643,7 +643,7 @@ const Attendance = () => {
             <div className="text-sm text-gray-500">
               Attendance Rate: {members.length > 0 ? Math.round((attendance.filter(a => a.status === 'present').length / members.length) * 100) : 0}%
             </div>
-            {members.filter(m => !getAttendanceStatus(m.id)).length > 0 && selectedDate <= new Date().toISOString().split('T')[0] && (
+            {members.filter(m => !getAttendanceStatus(m.id)).length > 0 && selectedDate <= getISTDate() && (
               <>
                 <button
                   onClick={markAllAbsent}
