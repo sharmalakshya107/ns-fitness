@@ -204,55 +204,97 @@ router.post('/self-checkin', [
       });
     }
 
-    // Step 5: Check gym operating hours (based on first and last batch)
+    // Step 5: Check if ANY batch is currently running (strict check)
     const allBatches = await Batch.findAll({
       where: { is_active: true },
-      attributes: ['start_time', 'end_time'],
+      attributes: ['id', 'name', 'start_time', 'end_time'],
       order: [['start_time', 'ASC']]
     });
 
     if (allBatches.length > 0) {
+      const currentTime = getISTTime(); // Get current IST time (HH:MM)
       const firstBatch = allBatches[0];
       const lastBatch = allBatches[allBatches.length - 1];
-      
-      const currentTime = getISTTime(); // Get current IST time (HH:MM)
-      const gymOpenTime = firstBatch.start_time.substring(0, 5); // HH:MM
-      const gymCloseTime = lastBatch.end_time.substring(0, 5); // HH:MM
+      const gymOpenTime = firstBatch.start_time.substring(0, 5);
+      const gymCloseTime = lastBatch.end_time.substring(0, 5);
 
-      console.log(`🏋️ Gym Hours: ${gymOpenTime} - ${gymCloseTime}, Current: ${currentTime}`);
+      console.log(`🏋️ Current time: ${currentTime}, Gym hours: ${gymOpenTime} - ${gymCloseTime}`);
 
-      // Check if gym is closed (handle midnight crossing)
+      // First, check if gym is closed (outside all batch hours)
       let isGymClosed = false;
-      let errorMessage = '';
-
       if (gymOpenTime < gymCloseTime) {
         // Normal hours (e.g., 05:00 - 23:00)
         if (currentTime < gymOpenTime) {
           isGymClosed = true;
-          errorMessage = `⏰ Too early! Gym opens at ${gymOpenTime}. Please come back later.`;
+          return res.status(403).json({
+            success: false,
+            message: `⏰ Too early! Gym opens at ${gymOpenTime}. Please come back later.`
+          });
         } else if (currentTime > gymCloseTime) {
           isGymClosed = true;
-          errorMessage = `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens tomorrow at ${gymOpenTime}.`;
+          return res.status(403).json({
+            success: false,
+            message: `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens tomorrow at ${gymOpenTime}.`
+          });
         }
       } else {
         // Hours cross midnight (e.g., 05:00 - 01:00)
-        // Gym is OPEN if: time >= open OR time <= close
-        // Gym is CLOSED if: time > close AND time < open
         if (currentTime > gymCloseTime && currentTime < gymOpenTime) {
           isGymClosed = true;
-          errorMessage = `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens at ${gymOpenTime}.`;
+          return res.status(403).json({
+            success: false,
+            message: `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens at ${gymOpenTime}.`
+          });
         }
       }
 
-      if (isGymClosed) {
-        console.log(`⛔ Gym closed: ${errorMessage}`);
+      // Gym is open, but check if ANY batch is currently running
+      let isAnyBatchRunning = false;
+      let nextBatchTime = null;
+
+      for (const batch of allBatches) {
+        const batchStart = batch.start_time.substring(0, 5);
+        const batchEnd = batch.end_time.substring(0, 5);
+
+        // Check if current time is within this batch's time
+        if (batchStart < batchEnd) {
+          // Normal batch (doesn't cross midnight)
+          if (currentTime >= batchStart && currentTime <= batchEnd) {
+            isAnyBatchRunning = true;
+            break;
+          }
+        } else {
+          // Batch crosses midnight
+          if (currentTime >= batchStart || currentTime <= batchEnd) {
+            isAnyBatchRunning = true;
+            break;
+          }
+        }
+
+        // Find next batch if current time is before this batch
+        if (!nextBatchTime && currentTime < batchStart) {
+          nextBatchTime = batchStart;
+        }
+      }
+
+      // If no batch is currently running, block check-in
+      if (!isAnyBatchRunning) {
+        console.log(`⏸️ No batch currently running at ${currentTime}`);
+        
+        // Find the next batch time
+        if (!nextBatchTime) {
+          // If we didn't find next batch, it means we're past all batches today
+          // Next batch is tomorrow's first batch
+          nextBatchTime = gymOpenTime + ' (tomorrow)';
+        }
+
         return res.status(403).json({
           success: false,
-          message: errorMessage
+          message: `⏸️ No batches currently running. Gym resumes at ${nextBatchTime}. Please come back during batch hours.`
         });
       }
 
-      console.log(`✅ Gym is open, proceeding with check-in`);
+      console.log(`✅ A batch is currently running, proceeding with check-in`);
     }
 
     // Step 6: Check if attendance already marked today
