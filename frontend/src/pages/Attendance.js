@@ -510,7 +510,7 @@ const Attendance = () => {
             <div className="flex items-center">
               <Calendar className="h-6 w-6 text-blue-600 mr-2" />
               <h3 className="text-lg font-bold text-gray-900">
-                {selectedDate === new Date().toISOString().split('T')[0] 
+                {selectedDate === getISTDate() 
                   ? "Today's Check-ins (Digital Diary)" 
                   : `Check-ins on ${new Date(selectedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })} (Digital Diary)`
                 }
@@ -556,6 +556,11 @@ const Attendance = () => {
                       <p className="text-xs text-gray-500">
                         {record.status === 'late' ? '🟡 Late' : '🟢 On Time'}
                       </p>
+                      <p className="text-xs text-blue-600 mt-1">
+                        {record.marker 
+                          ? `Marked by: ${record.marker.full_name || record.marker.username}`
+                          : `✓ Self Check-in`}
+                      </p>
                     </div>
                   </div>
                 );
@@ -564,12 +569,12 @@ const Attendance = () => {
           </div>
           {attendance.filter(a => a.status === 'present' || a.status === 'late').length === 0 && (
             <p className="text-center text-gray-500 py-4">
-              {selectedDate === new Date().toISOString().split('T')[0] 
+              {selectedDate === getISTDate() 
                 ? 'No check-ins yet today' 
                 : 'No one came on this date'}
             </p>
           )}
-          {selectedDate !== new Date().toISOString().split('T')[0] && attendance.filter(a => a.status === 'present' || a.status === 'late').length > 0 && (
+          {selectedDate !== getISTDate() && attendance.filter(a => a.status === 'present' || a.status === 'late').length > 0 && (
             <div className="mt-3 p-2 bg-blue-100 rounded text-center">
               <p className="text-xs text-blue-700">
                 📅 Historical Record - {attendance.filter(a => a.status === 'present' || a.status === 'late').length} members attended
