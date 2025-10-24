@@ -271,7 +271,10 @@ router.put('/:id', [
 // Delete payment (soft delete)
 router.delete('/:id', authenticateToken, requireSubAdminOrMain, async (req, res) => {
   try {
-    const payment = await Payment.findByPk(req.params.id);
+    const payment = await Payment.findByPk(req.params.id, {
+      include: [{ model: Member, as: 'member' }]
+    });
+    
     if (!payment) {
       return res.status(404).json({
         success: false,
@@ -279,11 +282,67 @@ router.delete('/:id', authenticateToken, requireSubAdminOrMain, async (req, res)
       });
     }
 
+    const memberId = payment.member_id;
+
+    // Soft delete the payment
     await payment.update({ is_active: false });
+
+    console.log(`💳 Payment deleted for member ${memberId}, recalculating membership...`);
+
+    // Recalculate member's end_date based on remaining active payments
+    const remainingPayments = await Payment.findAll({
+      where: {
+        member_id: memberId,
+        is_active: true
+      },
+      order: [['payment_date', 'ASC']]
+    });
+
+    const member = await Member.findByPk(memberId);
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: 'Member not found'
+      });
+    }
+
+    if (remainingPayments.length === 0) {
+      // No payments left - set to pending
+      console.log(`⚠️ No active payments remaining for member ${member.name}`);
+      await member.update({
+        end_date: null,
+        membership_status: 'pending',
+        payment_status: 'pending'
+      });
+    } else {
+      // Recalculate end_date from remaining payments
+      // Start from the earliest payment date
+      const firstPayment = remainingPayments[0];
+      let currentEndDate = new Date(firstPayment.start_date || firstPayment.payment_date);
+      
+      // Add all payment durations
+      let totalMonths = 0;
+      remainingPayments.forEach(p => {
+        totalMonths += parseInt(p.duration) || 0;
+      });
+
+      // Calculate new end date
+      currentEndDate.setMonth(currentEndDate.getMonth() + totalMonths);
+      const newEndDate = currentEndDate.toISOString().split('T')[0];
+
+      console.log(`✅ Recalculated end_date for ${member.name}: ${newEndDate} (${totalMonths} months from ${remainingPayments.length} payments)`);
+
+      await member.update({
+        end_date: newEndDate
+      });
+
+      // Update membership status based on new end_date
+      await updateMemberStatus(memberId);
+    }
 
     res.json({
       success: true,
-      message: 'Payment deleted successfully'
+      message: 'Payment deleted and membership recalculated successfully'
     });
   } catch (error) {
     console.error('Delete payment error:', error);
