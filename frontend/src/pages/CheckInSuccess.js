@@ -88,12 +88,33 @@ function CheckInSuccess() {
           </div>
 
           {/* Late Warning */}
-          {isLate && (
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                <strong>Note:</strong> You arrived after your batch time ({data.batchTime}). 
-                Your attendance is marked as LATE but counts as present.
-              </p>
+          {data.lateWarning && (
+            <div className="mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-lg">
+              <h3 className="text-lg font-bold text-red-800 mb-3 flex items-center gap-2">
+                ⚠️ Late Check-in Warning
+              </h3>
+              <div className="space-y-2 text-sm text-red-900">
+                <p className="font-semibold">
+                  Be on time! Continuous violations can lead to:
+                </p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li>Membership termination</li>
+                  <li>Trimming of your batch timing</li>
+                </ul>
+                <div className="mt-4 pt-4 border-t border-red-200">
+                  <p className="font-semibold">Your Batch Details:</p>
+                  <p className="mt-1">
+                    <span className="font-medium">{data.batchName}</span><br />
+                    Timing: {data.batchTime}
+                  </p>
+                </div>
+                <div className="mt-4 pt-4 border-t border-red-200 bg-red-100 -mx-4 -mb-4 p-4 rounded-b-lg">
+                  <p className="font-semibold text-center">
+                    📞 For batch change, contact:<br />
+                    <span className="text-lg">Nagendra Sain (Bunty)</span>
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>

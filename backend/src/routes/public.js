@@ -224,16 +224,31 @@ router.post('/self-checkin', [
 
     console.log(`✅ Self check-in: ${member.name} marked ${status} at ${attendance.check_in_time}`);
 
+    // Prepare message based on status
+    let message = '';
+    let lateWarning = null;
+    
+    if (status === 'late') {
+      message = `Attendance marked as LATE. Please be on time next time.`;
+      lateWarning = {
+        title: '⚠️ Late Check-in Warning',
+        message: `Be on time! Continuous violations can lead to membership termination or trimming of your batch timing.\n\nYour Batch: ${member.batch.name}\nTiming: ${member.batch.start_time} - ${member.batch.end_time}\n\nFor batch change, contact:\nNagendra Sain (Bunty)`
+      };
+    } else {
+      message = `Attendance marked as PRESENT! Welcome to NS Fitness.`;
+    }
+
     res.json({
       success: true,
-      message: `Attendance marked as ${status.toUpperCase()}! Welcome to NS Fitness.`,
+      message: message,
       data: {
         memberName: member.name,
         status: status,
         batchName: member.batch.name,
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
         checkInTime: checkInTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
-        distance: Math.round(distance)
+        distance: Math.round(distance),
+        lateWarning: lateWarning
       }
     });
 
