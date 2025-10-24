@@ -657,7 +657,7 @@ const Attendance = () => {
                 </button>
               </>
             )}
-            {selectedDate > new Date().toISOString().split('T')[0] && (
+            {selectedDate > getISTDate() && (
               <div className="text-sm text-orange-600 font-medium">
                 ⚠️ Future date - View only
               </div>
@@ -676,7 +676,7 @@ const Attendance = () => {
             const status = getAttendanceStatus(member.id);
             const record = getAttendanceRecord(member.id);
             const checkInTime = record?.check_in_time || record?.checkInTime;
-            const isFutureDate = selectedDate > new Date().toISOString().split('T')[0];
+            const isFutureDate = selectedDate > getISTDate();
             
             return (
               <div key={member.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
