@@ -204,7 +204,59 @@ router.post('/self-checkin', [
       });
     }
 
-    // Step 5: Check if attendance already marked today
+    // Step 5: Check gym operating hours (based on first and last batch)
+    const { Batch } = require('../models');
+    const allBatches = await Batch.findAll({
+      where: { is_active: true },
+      attributes: ['start_time', 'end_time'],
+      order: [['start_time', 'ASC']]
+    });
+
+    if (allBatches.length > 0) {
+      const firstBatch = allBatches[0];
+      const lastBatch = allBatches[allBatches.length - 1];
+      
+      const currentTime = getISTTime(); // Get current IST time (HH:MM)
+      const gymOpenTime = firstBatch.start_time.substring(0, 5); // HH:MM
+      const gymCloseTime = lastBatch.end_time.substring(0, 5); // HH:MM
+
+      console.log(`🏋️ Gym Hours: ${gymOpenTime} - ${gymCloseTime}, Current: ${currentTime}`);
+
+      // Check if gym is closed (handle midnight crossing)
+      let isGymClosed = false;
+      let errorMessage = '';
+
+      if (gymOpenTime < gymCloseTime) {
+        // Normal hours (e.g., 05:00 - 23:00)
+        if (currentTime < gymOpenTime) {
+          isGymClosed = true;
+          errorMessage = `⏰ Too early! Gym opens at ${gymOpenTime}. Please come back later.`;
+        } else if (currentTime > gymCloseTime) {
+          isGymClosed = true;
+          errorMessage = `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens tomorrow at ${gymOpenTime}.`;
+        }
+      } else {
+        // Hours cross midnight (e.g., 05:00 - 01:00)
+        // Gym is OPEN if: time >= open OR time <= close
+        // Gym is CLOSED if: time > close AND time < open
+        if (currentTime > gymCloseTime && currentTime < gymOpenTime) {
+          isGymClosed = true;
+          errorMessage = `🌙 Gym is closed! Last batch ended at ${gymCloseTime}. Opens at ${gymOpenTime}.`;
+        }
+      }
+
+      if (isGymClosed) {
+        console.log(`⛔ Gym closed: ${errorMessage}`);
+        return res.status(403).json({
+          success: false,
+          message: errorMessage
+        });
+      }
+
+      console.log(`✅ Gym is open, proceeding with check-in`);
+    }
+
+    // Step 6: Check if attendance already marked today
     const today = getISTDate(); // Get today's date in IST
     
     console.log(`🔍 Checking existing attendance for member ${member.id} on ${today}`);
