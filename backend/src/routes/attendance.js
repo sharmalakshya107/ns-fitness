@@ -107,14 +107,6 @@ router.post('/mark', [
         continue; // Skip invalid members
       }
 
-      // Check if member has active payment
-      const hasActivePayment = member.payment_status === 'paid' && 
-        (member.membership_status === 'active' || member.membership_status === 'expiring_soon');
-      
-      if (!hasActivePayment) {
-        continue; // Skip members without active payment
-      }
-
       // Check if attendance already exists for this member on this date
       const existingAttendance = await Attendance.findOne({
         where: {
