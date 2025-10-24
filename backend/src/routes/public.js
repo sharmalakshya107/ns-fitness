@@ -164,8 +164,8 @@ router.post('/self-checkin', [
     }
 
     // Step 3: Verify geo-location (check if member is at gym)
-    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.5530);
-    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.6346);
+    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.544129);
+    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.593373);
     const allowedRadius = parseFloat(process.env.GYM_RADIUS_METERS || 200);
 
     const distance = calculateDistance(gymLat, gymLon, latitude, longitude);
