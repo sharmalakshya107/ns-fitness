@@ -92,58 +92,81 @@ function CheckInSuccess() {
             </div>
           </div>
 
-          {/* Membership Info */}
+          {/* Membership Info - Redesigned */}
           {data.endDate && data.membershipStatus !== 'pending' && (
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Membership Expires</p>
-                  <p className="font-semibold text-gray-800">
-                    {new Date(data.endDate).toLocaleDateString('en-IN', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-                  </p>
-                  <p className="text-sm font-semibold text-blue-700 mt-1">
-                    {(() => {
-                      const today = new Date();
-                      const expiryDate = new Date(data.endDate);
-                      const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            <div className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl shadow-sm">
+              {(() => {
+                const today = new Date();
+                const expiryDate = new Date(data.endDate);
+                const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl">
+                          📅
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 font-medium">Membership Status</p>
+                          <p className="text-sm font-bold text-gray-800">
+                            {daysRemaining >= 0 && daysRemaining <= 7 ? 'Expiring Soon' : 'Active'}
+                          </p>
+                        </div>
+                      </div>
+                      {daysRemaining >= 0 && daysRemaining <= 7 ? (
+                        <span className="px-3 py-1.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full shadow-sm">
+                          ⚠️ Renew
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1.5 bg-green-500 text-white text-xs font-bold rounded-full shadow-sm">
+                          ✓ Active
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="bg-white rounded-lg p-4 border border-blue-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Expires On</p>
+                          <p className="text-lg font-bold text-gray-900">
+                            {new Date(data.endDate).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-500 mb-1">Days Left</p>
+                          <p className={`text-2xl font-extrabold ${
+                            daysRemaining <= 7 ? 'text-red-600' : 
+                            daysRemaining <= 15 ? 'text-yellow-600' : 
+                            'text-green-600'
+                          }`}>
+                            {daysRemaining >= 0 ? daysRemaining : 0}
+                          </p>
+                        </div>
+                      </div>
                       
-                      if (daysRemaining < 0) {
-                        return `⚠️ Expired ${Math.abs(daysRemaining)} days ago`;
-                      } else if (daysRemaining === 0) {
-                        return '⚠️ Expires TODAY!';
-                      } else if (daysRemaining === 1) {
-                        return '⚠️ Expires TOMORROW!';
-                      } else {
-                        return `📅 ${daysRemaining} days remaining`;
-                      }
-                    })()}
-                  </p>
-                </div>
-                {(() => {
-                  const today = new Date();
-                  const expiryDate = new Date(data.endDate);
-                  const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-                  
-                  if (daysRemaining >= 0 && daysRemaining <= 7) {
-                    return (
-                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
-                        Expiring Soon
-                      </span>
-                    );
-                  } else if (daysRemaining > 7) {
-                    return (
-                      <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                        Active
-                      </span>
-                    );
-                  }
-                  return null;
-                })()}
-              </div>
+                      {daysRemaining === 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-sm font-semibold text-red-600 text-center">
+                            ⚠️ Last day! Renew today to continue
+                          </p>
+                        </div>
+                      )}
+                      {daysRemaining === 1 && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-sm font-semibold text-orange-600 text-center">
+                            ⚠️ Expires tomorrow! Please renew
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           )}
 
