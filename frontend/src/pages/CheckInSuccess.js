@@ -105,20 +105,20 @@ function CheckInSuccess() {
                       year: 'numeric'
                     })}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-sm font-semibold text-blue-700 mt-1">
                     {(() => {
                       const today = new Date();
                       const expiryDate = new Date(data.endDate);
                       const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
                       
                       if (daysRemaining < 0) {
-                        return `Expired ${Math.abs(daysRemaining)} days ago`;
+                        return `⚠️ Expired ${Math.abs(daysRemaining)} days ago`;
                       } else if (daysRemaining === 0) {
-                        return 'Expires TODAY';
+                        return '⚠️ Expires TODAY!';
                       } else if (daysRemaining === 1) {
-                        return 'Expires TOMORROW';
+                        return '⚠️ Expires TOMORROW!';
                       } else {
-                        return `${daysRemaining} days remaining`;
+                        return `📅 ${daysRemaining} days remaining`;
                       }
                     })()}
                   </p>
