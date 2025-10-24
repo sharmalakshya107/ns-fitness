@@ -23,15 +23,31 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // Helper function to check if current time is within batch time
 function getAttendanceStatus(batchStartTime, batchEndTime) {
-  const currentTime = getISTTime(); // Get current IST time
+  const currentTime = getISTTime(); // Get current IST time (HH:MM format)
   
   console.log(`⏰ Current IST time: ${currentTime}, Batch: ${batchStartTime} - ${batchEndTime}`);
   
-  // If within batch time → present
-  if (currentTime >= batchStartTime && currentTime <= batchEndTime) {
-    return 'present';
+  // Handle batch times that cross midnight (e.g., 23:00:00 - 00:00:00)
+  const start = batchStartTime.substring(0, 5); // HH:MM
+  const end = batchEndTime.substring(0, 5); // HH:MM
+  
+  if (start > end) {
+    // Batch crosses midnight (e.g., 23:00 - 00:00 or 23:00 - 01:00)
+    // Member is present if: time >= start OR time <= end
+    if (currentTime >= start || currentTime <= end) {
+      console.log(`✅ PRESENT (batch crosses midnight, ${currentTime} is within ${start}-${end})`);
+      return 'present';
+    }
+  } else {
+    // Normal batch (e.g., 05:00 - 06:30)
+    // Member is present if: time >= start AND time <= end
+    if (currentTime >= start && currentTime <= end) {
+      console.log(`✅ PRESENT (normal batch, ${currentTime} is within ${start}-${end})`);
+      return 'present';
+    }
   }
-  // If after batch time → late
+  
+  console.log(`⏰ LATE (${currentTime} is outside ${start}-${end})`);
   return 'late';
 }
 
@@ -166,8 +182,9 @@ router.post('/self-checkin', [
     }
 
     // Step 3: Verify geo-location (check if member is at gym)
-    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.544129);
-    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.593373);
+    // TEMP: Using home location for testing
+    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.542603);
+    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.596084);
     const allowedRadius = parseFloat(process.env.GYM_RADIUS_METERS || 100);
 
     const distance = calculateDistance(gymLat, gymLon, latitude, longitude);
