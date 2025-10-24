@@ -338,16 +338,27 @@ router.get('/members', authenticateToken, requireMainAdmin, async (req, res) => 
   }
 });
 
+// Helper function to get ordinal suffix (1st, 2nd, 3rd, etc.)
+function getOrdinalSuffix(number) {
+  const j = number % 10;
+  const k = number % 100;
+  if (j === 1 && k !== 11) return number + 'st';
+  if (j === 2 && k !== 12) return number + 'nd';
+  if (j === 3 && k !== 13) return number + 'rd';
+  return number + 'th';
+}
+
 // Get upcoming birthdays (today and tomorrow)
 router.get('/birthdays', authenticateToken, async (req, res) => {
   try {
     const { getISTDate } = require('../utils/timezone');
     
-    // Get all active members with DOB
+    // Get only members with active memberships (exclude pending/expired)
     const members = await Member.findAll({
       where: {
         is_active: true,
-        date_of_birth: { [Op.ne]: null }
+        date_of_birth: { [Op.ne]: null },
+        membership_status: { [Op.in]: ['active', 'frozen', 'expiring_soon'] }
       },
       attributes: ['id', 'name', 'phone', 'email', 'date_of_birth'],
       order: [['name', 'ASC']]
@@ -375,6 +386,7 @@ router.get('/birthdays', authenticateToken, async (req, res) => {
           name: member.name,
           phone: member.phone,
           age: age,
+          ordinalAge: getOrdinalSuffix(age),
           date: member.date_of_birth
         });
       }
@@ -388,6 +400,7 @@ router.get('/birthdays', authenticateToken, async (req, res) => {
           name: member.name,
           phone: member.phone,
           age: age,
+          ordinalAge: getOrdinalSuffix(age),
           date: member.date_of_birth
         });
       }

@@ -315,13 +315,13 @@ const Dashboard = () => {
               <div className="space-y-2">
                 {birthdays.today.map(member => (
                   <div key={member.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium text-gray-900">{member.name}</p>
                       <p className="text-xs text-gray-500">📞 {member.phone}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-pink-600">{member.age} yrs</p>
-                      <p className="text-xs text-gray-500">Wish them! 🎉</p>
+                      <p className="text-sm font-bold text-pink-600">{member.ordinalAge} Birthday! 🎉</p>
+                      <p className="text-xs text-gray-500">Wish them now!</p>
                     </div>
                   </div>
                 ))}
@@ -335,13 +335,13 @@ const Dashboard = () => {
               <div className="space-y-2">
                 {birthdays.tomorrow.map(member => (
                   <div key={member.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium text-gray-900">{member.name}</p>
                       <p className="text-xs text-gray-500">📞 {member.phone}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-purple-600">{member.age} yrs</p>
-                      <p className="text-xs text-gray-500">Prepare! 🎂</p>
+                      <p className="text-sm font-bold text-purple-600">{member.ordinalAge} Birthday 🎂</p>
+                      <p className="text-xs text-gray-500">Prepare surprise!</p>
                     </div>
                   </div>
                 ))}
