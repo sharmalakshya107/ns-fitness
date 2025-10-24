@@ -357,14 +357,86 @@ const Attendance = () => {
             color: #666;
           }
           @media print {
-            .no-print { display: none; }
-            body { margin: 0; padding: 20px; }
-            .header { page-break-after: avoid; }
-            .summary { page-break-inside: avoid; }
-            table { page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            th { page-break-after: avoid; }
-            .footer { page-break-before: avoid; margin-top: 20px; font-size: 11px; }
+            .no-print { display: none !important; }
+            body { 
+              margin: 0; 
+              padding: 15mm;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .header { 
+              page-break-after: avoid;
+            }
+            .header h1 {
+              color: #000 !important;
+              font-size: 22px !important;
+              font-weight: bold !important;
+            }
+            .header p {
+              color: #000 !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+            }
+            .summary { 
+              page-break-inside: avoid;
+              background: #f5f5f5 !important;
+              border: 2px solid #000 !important;
+            }
+            .summary-item h4 {
+              color: #000 !important;
+              font-weight: bold !important;
+            }
+            .summary-item p {
+              color: #000 !important;
+              font-weight: 500 !important;
+            }
+            table { 
+              page-break-inside: auto;
+              border: 2px solid #000 !important;
+            }
+            th, td {
+              border: 1px solid #000 !important;
+              padding: 8px !important;
+              font-size: 12px !important;
+            }
+            th {
+              background-color: #000 !important;
+              color: #fff !important;
+              font-weight: bold !important;
+              page-break-after: avoid;
+            }
+            td {
+              color: #000 !important;
+              font-weight: 500 !important;
+            }
+            tr { 
+              page-break-inside: avoid; 
+              page-break-after: auto;
+            }
+            tr:nth-child(even) {
+              background-color: #f5f5f5 !important;
+            }
+            .status-present {
+              color: #000 !important;
+              font-weight: bold !important;
+              background: #e8e8e8 !important;
+              padding: 2px 6px !important;
+            }
+            .status-late {
+              color: #000 !important;
+              font-weight: bold !important;
+              background: #d8d8d8 !important;
+              padding: 2px 6px !important;
+            }
+            .footer { 
+              page-break-before: avoid; 
+              margin-top: 20px; 
+              font-size: 11px;
+              border-top: 2px solid #000 !important;
+              padding-top: 15px;
+              color: #000 !important;
+              font-weight: 500 !important;
+            }
           }
         </style>
       </head>

@@ -458,14 +458,101 @@ const Members = () => {
             padding-top: 20px;
           }
           @media print {
-            .no-print { display: none; }
-            body { margin: 0; padding: 20px; }
-            .header { page-break-after: avoid; }
-            .member-info { page-break-inside: avoid; }
-            .section-title { page-break-after: avoid; }
-            table { page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            .footer { page-break-before: avoid; margin-top: 20px; padding-top: 15px; }
+            .no-print { display: none !important; }
+            body { 
+              margin: 0; 
+              padding: 15mm; 
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .header { 
+              page-break-after: avoid; 
+            }
+            .header h1 {
+              color: #000 !important;
+              font-size: 24px !important;
+              font-weight: bold !important;
+            }
+            .header p {
+              color: #000 !important;
+              font-size: 12px !important;
+            }
+            .member-info { 
+              page-break-inside: avoid;
+              background: #f5f5f5 !important;
+              border: 1px solid #000 !important;
+            }
+            .member-info h3 {
+              color: #000 !important;
+              font-weight: bold !important;
+            }
+            .info-label {
+              color: #000 !important;
+              font-weight: bold !important;
+              font-size: 11px !important;
+            }
+            .info-value {
+              color: #000 !important;
+              font-weight: 600 !important;
+              font-size: 13px !important;
+            }
+            .section-title { 
+              page-break-after: avoid;
+              background: #000 !important;
+              color: #fff !important;
+              border: 1px solid #000 !important;
+              font-weight: bold !important;
+            }
+            table { 
+              page-break-inside: auto;
+              border: 2px solid #000 !important;
+            }
+            th, td {
+              border: 1px solid #000 !important;
+              padding: 8px !important;
+              font-size: 12px !important;
+            }
+            th {
+              background-color: #000 !important;
+              color: #fff !important;
+              font-weight: bold !important;
+            }
+            td {
+              color: #000 !important;
+              font-weight: 500 !important;
+            }
+            tr { 
+              page-break-inside: avoid; 
+              page-break-after: auto;
+            }
+            tr:nth-child(even) {
+              background-color: #f5f5f5 !important;
+            }
+            .status-present { 
+              color: #000 !important; 
+              font-weight: bold !important; 
+              background: #e8e8e8 !important;
+              padding: 2px 6px !important;
+            }
+            .status-late { 
+              color: #000 !important; 
+              font-weight: bold !important; 
+              background: #d8d8d8 !important;
+              padding: 2px 6px !important;
+            }
+            .status-absent { 
+              color: #000 !important; 
+              font-weight: bold !important; 
+              text-decoration: line-through;
+            }
+            .footer { 
+              page-break-before: avoid; 
+              margin-top: 20px; 
+              padding-top: 15px;
+              border-top: 2px solid #000 !important;
+              color: #000 !important;
+              font-weight: 500 !important;
+            }
           }
         </style>
       </head>

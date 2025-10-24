@@ -313,35 +313,79 @@ const Payments = () => {
             }
             @media print {
               body {
-                background: white;
+                background: white !important;
                 margin: 0;
-                padding: 0;
+                padding: 15mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
               }
               .receipt {
-                box-shadow: none;
-                padding: 20px;
+                box-shadow: none !important;
+                padding: 0;
                 page-break-inside: avoid;
               }
               .print-button {
-                display: none;
+                display: none !important;
               }
               .header {
                 page-break-after: avoid;
               }
+              .header h1 {
+                color: #000 !important;
+                font-size: 28px !important;
+                font-weight: bold !important;
+              }
+              .header p {
+                color: #000 !important;
+                font-size: 12px !important;
+              }
+              .receipt-no {
+                background: #000 !important;
+                color: #fff !important;
+                border: 2px solid #000 !important;
+                padding: 8px 16px !important;
+                font-weight: bold !important;
+              }
               .details {
                 page-break-inside: avoid;
+              }
+              .detail-row {
+                border-bottom: 1px solid #000 !important;
+                padding: 10px 0 !important;
+              }
+              .detail-label {
+                color: #000 !important;
+                font-weight: bold !important;
+                font-size: 13px !important;
+              }
+              .detail-value {
+                color: #000 !important;
+                font-weight: 600 !important;
+                font-size: 13px !important;
               }
               .amount-section {
                 page-break-inside: avoid;
                 margin: 20px 0;
+                background: #f5f5f5 !important;
+                border: 2px solid #000 !important;
+                padding: 15px !important;
+              }
+              .amount-section h2 {
+                color: #000 !important;
+                font-size: 24px !important;
+                font-weight: bold !important;
               }
               .footer {
                 page-break-before: avoid;
                 margin-top: 20px;
                 padding-top: 15px;
+                border-top: 2px solid #000 !important;
               }
               .footer p {
                 margin: 5px 0;
+                color: #000 !important;
+                font-size: 11px !important;
+                font-weight: 500 !important;
               }
             }
           </style>
