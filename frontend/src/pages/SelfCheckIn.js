@@ -17,6 +17,16 @@ function SelfCheckIn() {
   useEffect(() => {
     // Auto-detect location when page loads
     getLocation();
+    
+    // Load saved credentials from localStorage
+    const savedPhone = localStorage.getItem('checkin_phone');
+    const savedEmail = localStorage.getItem('checkin_email');
+    if (savedPhone || savedEmail) {
+      setFormData({
+        phone: savedPhone || '',
+        email: savedEmail || ''
+      });
+    }
   }, []);
 
   const getLocation = () => {
@@ -80,6 +90,10 @@ function SelfCheckIn() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        // Save credentials to localStorage for next time
+        localStorage.setItem('checkin_phone', formData.phone);
+        localStorage.setItem('checkin_email', formData.email);
+        
         toast.success(data.message);
         // Show success details
         setTimeout(() => {
