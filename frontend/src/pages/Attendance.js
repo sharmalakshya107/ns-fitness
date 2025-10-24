@@ -693,8 +693,72 @@ const Attendance = () => {
                     </span>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{member.name}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">{member.name}</span>
+                      {/* Membership Status Badge */}
+                      {member.membership_status === 'pending' && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-700">
+                          Trial
+                        </span>
+                      )}
+                      {member.membership_status === 'active' && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                          Active
+                        </span>
+                      )}
+                      {member.membership_status === 'expiring_soon' && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+                          Expiring Soon
+                        </span>
+                      )}
+                      {member.membership_status === 'expired' && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                          Expired
+                        </span>
+                      )}
+                      {member.membership_status === 'frozen' && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                          Frozen
+                        </span>
+                      )}
+                    </div>
                     <div className="text-sm text-gray-500">{member.phone}</div>
+                    {/* Trial/Expiry Warning for Admin */}
+                    {member.membership_status === 'pending' && member.createdAt && (
+                      <>
+                        {(() => {
+                          const regDate = new Date(member.createdAt);
+                          const today = new Date();
+                          const daysSinceReg = Math.ceil((today - regDate) / (1000 * 60 * 60 * 24));
+                          if (daysSinceReg > 3) {
+                            return (
+                              <div className="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                <XCircle className="h-3 w-3" />
+                                Trial ended {daysSinceReg - 3} days ago - No payment!
+                              </div>
+                            );
+                          } else if (daysSinceReg === 3) {
+                            return (
+                              <div className="text-xs text-orange-600 font-semibold mt-1">
+                                ⚠️ Trial ends TODAY - Last free day!
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="text-xs text-purple-600 mt-1">
+                                Free trial: Day {daysSinceReg}/3
+                              </div>
+                            );
+                          }
+                        })()}
+                      </>
+                    )}
+                    {member.membership_status === 'expired' && member.end_date && (
+                      <div className="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                        <XCircle className="h-3 w-3" />
+                        Expired {Math.ceil((new Date() - new Date(member.end_date)) / (1000 * 60 * 60 * 24))} days ago
+                      </div>
+                    )}
                   </div>
                 </div>
                 
