@@ -205,7 +205,6 @@ router.post('/self-checkin', [
     }
 
     // Step 5: Check gym operating hours (based on first and last batch)
-    const { Batch } = require('../models');
     const allBatches = await Batch.findAll({
       where: { is_active: true },
       attributes: ['start_time', 'end_time'],
