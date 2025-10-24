@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 import { Calendar, Users, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getISTDate } from '../utils/timezone';
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [batches, setBatches] = useState([]);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getISTDate());
   const [selectedBatch, setSelectedBatch] = useState('');
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const Attendance = () => {
     }
 
     // Prevent marking attendance for future dates
-    const today = new Date().toISOString().split('T')[0];
+    const today = getISTDate();
     if (selectedDate > today) {
       toast.error('Cannot mark attendance for future dates!');
       return;
@@ -161,7 +162,7 @@ const Attendance = () => {
 
   const autoMarkAllAbsent = async () => {
     // Prevent marking attendance for future dates
-    const today = new Date().toISOString().split('T')[0];
+    const today = getISTDate();
     if (selectedDate > today) {
       toast.error('Cannot mark attendance for future dates!');
       return;
@@ -201,7 +202,7 @@ const Attendance = () => {
     }
 
     // Prevent marking attendance for future dates
-    const today = new Date().toISOString().split('T')[0];
+    const today = getISTDate();
     if (selectedDate > today) {
       toast.error('Cannot mark attendance for future dates!');
       return;

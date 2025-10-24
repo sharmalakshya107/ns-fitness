@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { getISTDate, getISTDateTime } from '../utils/timezone';
 import { BarChart3, Download, Calendar, DollarSign, Users } from 'lucide-react';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 
@@ -9,8 +10,12 @@ const Reports = () => {
   const [monthlyBreakdown, setMonthlyBreakdown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0]
+    startDate: (() => {
+      const istDate = getISTDateTime();
+      istDate.setDate(istDate.getDate() - 30);
+      return istDate.toISOString().split('T')[0];
+    })(),
+    endDate: getISTDate()
   });
 
   useEffect(() => {

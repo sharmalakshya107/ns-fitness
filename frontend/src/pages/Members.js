@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { getISTDate } from '../utils/timezone';
 import { 
   Plus, 
   Search, 
@@ -46,7 +47,7 @@ const Members = () => {
 
   const [freezeData, setFreezeData] = useState({
     reason: '',
-    freezeStartDate: new Date().toISOString().split('T')[0],
+    freezeStartDate: getISTDate(),
     expectedDuration: ''
   });
 
@@ -235,7 +236,7 @@ const Members = () => {
       if (data.success) {
         toast.success('Membership frozen successfully');
         setShowFreezeModal(false);
-        setFreezeData({ reason: '', freezeStartDate: new Date().toISOString().split('T')[0], expectedDuration: '' });
+        setFreezeData({ reason: '', freezeStartDate: getISTDate(), expectedDuration: '' });
         fetchMembers();
       } else {
         toast.error(data.message || 'Failed to freeze membership');
@@ -1186,7 +1187,7 @@ const Members = () => {
                     type="button"
                     onClick={() => {
                       setShowFreezeModal(false);
-                      setFreezeData({ reason: '', freezeStartDate: new Date().toISOString().split('T')[0], expectedDuration: '' });
+                      setFreezeData({ reason: '', freezeStartDate: getISTDate(), expectedDuration: '' });
                     }}
                     className="btn-secondary"
                   >

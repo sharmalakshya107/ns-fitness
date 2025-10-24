@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { getISTDate } from '../utils/timezone';
 import { 
   Plus, 
   Search, 
@@ -29,7 +30,7 @@ const Payments = () => {
     amount: '',
     duration: '',
     paymentMethod: 'cash',
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: getISTDate(),
     notes: ''
   });
 
@@ -143,7 +144,7 @@ const Payments = () => {
       amount: '',
       duration: '',
       paymentMethod: 'cash',
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: getISTDate(),
       notes: ''
     });
   };
