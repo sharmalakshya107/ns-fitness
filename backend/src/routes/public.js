@@ -295,7 +295,7 @@ router.post('/self-checkin', [
         batchName: member.batch.name,
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
         checkInTime: formattedTime,
-        // Do NOT expose distance - security risk (can be used to triangulate gym location)
+        distance: Math.round(distance), // Distance from gym (useful feedback for member)
         lateWarning: lateWarning
       }
     });
