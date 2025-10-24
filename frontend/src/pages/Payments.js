@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '../config';
 import { getISTDate } from '../utils/timezone';
 import { 
@@ -37,33 +37,7 @@ const Payments = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    fetchPayments();
-    fetchMembers();
-  }, []);
-
-  // Debounced search - waits 800ms after user stops typing
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1); // Reset to page 1 when searching
-      fetchPayments();
-    }, 800); // Wait 800ms after user stops typing
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Fetch when filters change (no debounce for filters)
-  useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 when filters change
-    fetchPayments();
-  }, [filterMethod, filterDuration, startDate, endDate]);
-
-  // Fetch when page changes
-  useEffect(() => {
-    fetchPayments();
-  }, [currentPage]);
-
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const params = new URLSearchParams();
@@ -94,7 +68,34 @@ const Payments = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchTerm, filterMethod, filterDuration, startDate, endDate, currentPage]);
+
+  useEffect(() => {
+    fetchPayments();
+    fetchMembers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Debounced search - waits 800ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to page 1 when searching
+      fetchPayments();
+    }, 800); // Wait 800ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, fetchPayments]);
+
+  // Fetch when filters change (no debounce for filters)
+  useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filters change
+    fetchPayments();
+  }, [filterMethod, filterDuration, startDate, endDate, fetchPayments]);
+
+  // Fetch when page changes
+  useEffect(() => {
+    fetchPayments();
+  }, [currentPage, fetchPayments]);
 
   const fetchMembers = async () => {
     try {

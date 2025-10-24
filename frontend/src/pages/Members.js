@@ -600,6 +600,30 @@ const Members = () => {
           </div>
         </div>
         
+        ${member.membership_status === 'frozen' ? `
+        <div class="member-info" style="background: #fff3cd; border: 2px solid #ffc107;">
+          <h3 style="color: #856404;">❄️ Membership Frozen</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Freeze Start Date</div>
+              <div class="info-value">${member.freeze_start_date ? new Date(member.freeze_start_date).toLocaleDateString('en-IN') : 'N/A'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Freeze End Date</div>
+              <div class="info-value">${member.freeze_end_date ? new Date(member.freeze_end_date).toLocaleDateString('en-IN') : 'N/A'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Freeze Reason</div>
+              <div class="info-value">${member.freeze_reason || 'N/A'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Days Frozen</div>
+              <div class="info-value">${member.freeze_start_date && member.freeze_end_date ? Math.ceil((new Date(member.freeze_end_date) - new Date(member.freeze_start_date)) / (1000 * 60 * 60 * 24)) : 'N/A'} days</div>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+        
         <h2 class="section-title">Payment History</h2>
         <table>
           <thead>
