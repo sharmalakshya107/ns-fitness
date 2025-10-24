@@ -105,17 +105,44 @@ function CheckInSuccess() {
                       year: 'numeric'
                     })}
                   </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {(() => {
+                      const today = new Date();
+                      const expiryDate = new Date(data.endDate);
+                      const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                      
+                      if (daysRemaining < 0) {
+                        return `Expired ${Math.abs(daysRemaining)} days ago`;
+                      } else if (daysRemaining === 0) {
+                        return 'Expires TODAY';
+                      } else if (daysRemaining === 1) {
+                        return 'Expires TOMORROW';
+                      } else {
+                        return `${daysRemaining} days remaining`;
+                      }
+                    })()}
+                  </p>
                 </div>
-                {data.membershipStatus === 'active' && (
-                  <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                    Active
-                  </span>
-                )}
-                {data.membershipStatus === 'expiring_soon' && (
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
-                    Expiring Soon
-                  </span>
-                )}
+                {(() => {
+                  const today = new Date();
+                  const expiryDate = new Date(data.endDate);
+                  const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                  
+                  if (daysRemaining >= 0 && daysRemaining <= 7) {
+                    return (
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                        Expiring Soon
+                      </span>
+                    );
+                  } else if (daysRemaining > 7) {
+                    return (
+                      <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                        Active
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </div>
           )}
