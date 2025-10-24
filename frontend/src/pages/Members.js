@@ -31,6 +31,11 @@ const Members = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [filterBatch, setFilterBatch] = useState('');
   const [batches, setBatches] = useState([]);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalMembers, setTotalMembers] = useState(0);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -63,16 +68,24 @@ const Members = () => {
   // Debounced search - waits 800ms after user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to page 1 when search/filter changes
       fetchMembers();
     }, 800);
 
     return () => clearTimeout(timer);
   }, [searchTerm, filterStatus, filterBatch]);
 
+  // Fetch members when page changes
+  useEffect(() => {
+    fetchMembers();
+  }, [currentPage]);
+
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem('token');
       const params = new URLSearchParams();
+      params.append('page', currentPage);
+      params.append('limit', 10); // 10 members per page
       if (searchTerm) params.append('search', searchTerm);
       if (filterStatus) params.append('status', filterStatus);
       if (filterBatch) params.append('batchId', filterBatch);
@@ -87,6 +100,8 @@ const Members = () => {
       if (response.ok) {
         const data = await response.json();
         setMembers(data.data.members);
+        setTotalPages(data.data.totalPages || 1);
+        setTotalMembers(data.data.total || 0);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
@@ -866,6 +881,75 @@ const Members = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
+              <div className="text-sm text-gray-700">
+                Showing page <span className="font-medium">{currentPage}</span> of{' '}
+                <span className="font-medium">{totalPages}</span>
+                {' '}({totalMembers} total members)
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                    currentPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  ← Previous
+                </button>
+                
+                {/* Page Numbers */}
+                <div className="flex gap-1">
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNum = index + 1;
+                    // Show first page, last page, current page, and pages around current
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                            currentPage === pageNum
+                              ? 'bg-primary-600 text-white'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (
+                      pageNum === currentPage - 2 ||
+                      pageNum === currentPage + 2
+                    ) {
+                      return <span key={pageNum} className="px-2 py-2 text-gray-500">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                    currentPage === totalPages
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
