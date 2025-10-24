@@ -188,6 +188,9 @@ router.post('/self-checkin', [
 
     // Step 5: Check if attendance already marked today
     const today = new Date().toISOString().split('T')[0];
+    
+    console.log(`🔍 Checking existing attendance for member ${member.id} on ${today}`);
+    
     const existingAttendance = await Attendance.findOne({
       where: {
         member_id: member.id,
@@ -196,15 +199,19 @@ router.post('/self-checkin', [
     });
 
     if (existingAttendance) {
+      console.log(`⚠️ Attendance already exists: ${JSON.stringify(existingAttendance.dataValues)}`);
       return res.status(400).json({
         success: false,
         message: 'Attendance already marked for today!',
         data: {
           status: existingAttendance.status,
-          markedAt: existingAttendance.check_in_time
+          markedAt: existingAttendance.check_in_time,
+          markedBy: existingAttendance.marked_by ? 'Admin' : 'Self'
         }
       });
     }
+    
+    console.log(`✅ No existing attendance found, proceeding to mark...`);
 
     // Step 6: Determine attendance status (present or late based on batch time)
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
@@ -212,17 +219,31 @@ router.post('/self-checkin', [
     // Step 7: Mark attendance
     const checkInTime = new Date(); // Full date-time object for database
     
-    const attendance = await Attendance.create({
-      member_id: member.id,
-      batch_id: member.batch_id,
-      date: today,
-      status: status,
-      check_in_time: checkInTime, // Full DATE object, not just time string
-      marked_by: null, // NULL means self-marked by member
-      notes: 'Self check-in via mobile'
-    });
-
-    console.log(`✅ Self check-in: ${member.name} marked ${status} at ${attendance.check_in_time}`);
+    let attendance;
+    try {
+      attendance = await Attendance.create({
+        member_id: member.id,
+        batch_id: member.batch_id,
+        date: today,
+        status: status,
+        check_in_time: checkInTime, // Full DATE object, not just time string
+        marked_by: null, // NULL means self-marked by member
+        notes: 'Self check-in via mobile'
+      });
+      
+      console.log(`✅ Self check-in: ${member.name} marked ${status} at ${attendance.check_in_time}`);
+    } catch (createError) {
+      // Handle unique constraint violation (attendance already exists)
+      if (createError.name === 'SequelizeUniqueConstraintError') {
+        console.error(`❌ Duplicate attendance attempt for member ${member.id} on ${today}`);
+        return res.status(400).json({
+          success: false,
+          message: 'Attendance already marked for today! Please refresh and try again.'
+        });
+      }
+      // Re-throw other errors
+      throw createError;
+    }
 
     // Prepare message based on status
     let message = '';
