@@ -235,7 +235,8 @@ router.post('/self-checkin', [
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
 
     // Step 7: Mark attendance
-    const checkInTime = getISTDateTime(); // Get current IST date-time
+    // Use current time - PostgreSQL will store it with timezone
+    const checkInTime = new Date();
     
     let attendance;
     try {
