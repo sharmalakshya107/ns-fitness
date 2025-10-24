@@ -708,7 +708,7 @@ const Attendance = () => {
                         <div className="text-xs text-blue-600 mt-1">
                           {record.marker 
                             ? `Marked by: ${record.marker.full_name || record.marker.username}`
-                            : '✓ Marked by Member (Self Check-in)'}
+                            : `✓ Self Check-in by ${member.name}`}
                         </div>
                       )}
                     </div>
