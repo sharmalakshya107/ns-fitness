@@ -600,9 +600,11 @@ const Members = () => {
           </div>
         </div>
         
-        ${member.membership_status === 'frozen' ? `
-        <div class="member-info" style="background: #fff3cd; border: 2px solid #ffc107;">
-          <h3 style="color: #856404;">❄️ Membership Frozen</h3>
+        ${member.freeze_start_date ? `
+        <div class="member-info" style="background: ${member.membership_status === 'frozen' ? '#fff3cd' : '#e8f4f8'}; border: 2px solid ${member.membership_status === 'frozen' ? '#ffc107' : '#2196F3'};">
+          <h3 style="color: ${member.membership_status === 'frozen' ? '#856404' : '#1976D2'};">
+            ${member.membership_status === 'frozen' ? '❄️ Membership Currently Frozen' : '📅 Last Freeze History'}
+          </h3>
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">Freeze Start Date</div>
@@ -610,7 +612,7 @@ const Members = () => {
             </div>
             <div class="info-item">
               <div class="info-label">Freeze End Date</div>
-              <div class="info-value">${member.freeze_end_date ? new Date(member.freeze_end_date).toLocaleDateString('en-IN') : 'N/A'}</div>
+              <div class="info-value">${member.freeze_end_date ? new Date(member.freeze_end_date).toLocaleDateString('en-IN') : (member.membership_status === 'frozen' ? 'Ongoing' : 'N/A')}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Freeze Reason</div>
@@ -618,7 +620,7 @@ const Members = () => {
             </div>
             <div class="info-item">
               <div class="info-label">Days Frozen</div>
-              <div class="info-value">${member.freeze_start_date && member.freeze_end_date ? Math.ceil((new Date(member.freeze_end_date) - new Date(member.freeze_start_date)) / (1000 * 60 * 60 * 24)) : 'N/A'} days</div>
+              <div class="info-value">${member.freeze_start_date ? (member.freeze_end_date ? Math.ceil((new Date(member.freeze_end_date) - new Date(member.freeze_start_date)) / (1000 * 60 * 60 * 24)) + ' days' : Math.ceil((new Date() - new Date(member.freeze_start_date)) / (1000 * 60 * 60 * 24)) + ' days (ongoing)') : 'N/A'}</div>
             </div>
           </div>
         </div>

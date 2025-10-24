@@ -309,16 +309,29 @@ router.post('/:id/freeze', [
       });
     }
 
-    const freezeStartDate = req.body.freezeStartDate || new Date().toISOString().split('T')[0];
+    const { getISTDate } = require('../utils/timezone');
+    const freezeStartDate = req.body.freezeStartDate || getISTDate();
     const currentEndDate = member.end_date;
+    const expectedDuration = req.body.expectedDuration || null; // Duration in days
     
-    // Store freeze information in notes
+    // Calculate expected freeze end date if duration provided
+    let freezeEndDate = null;
+    if (expectedDuration) {
+      const startDate = new Date(freezeStartDate);
+      startDate.setDate(startDate.getDate() + parseInt(expectedDuration));
+      freezeEndDate = startDate.toISOString().split('T')[0];
+    }
+    
+    // Store freeze information in dedicated fields
     const freezeNote = `\n[FROZEN on ${freezeStartDate}] Reason: ${req.body.reason}. Previous status: ${member.membership_status}. Original end date: ${currentEndDate}.`;
     
     console.log('Freezing member:', member.id, 'Current status:', member.membership_status);
     
     await member.update({
       membership_status: 'frozen',
+      freeze_start_date: freezeStartDate,
+      freeze_end_date: freezeEndDate,
+      freeze_reason: req.body.reason,
       notes: (member.notes || '') + freezeNote
     });
 
@@ -374,49 +387,48 @@ router.post('/:id/unfreeze', [
       });
     }
 
-    // Parse freeze information from notes
-    const freezeMatch = member.notes?.match(/\[FROZEN on ([\d-]+)\].*Original end date: ([\d-]+)/);
-    let newEndDate = member.end_date;
+    const { getISTDate } = require('../utils/timezone');
+    const today = getISTDate();
     
-    if (freezeMatch && freezeMatch[1] && freezeMatch[2]) {
-      const freezeStartDate = new Date(freezeMatch[1]);
-      const originalEndDate = new Date(freezeMatch[2]);
-      const today = new Date();
-      
-      // Calculate days frozen
-      const daysFrozen = Math.ceil((today - freezeStartDate) / (1000 * 60 * 60 * 24));
-      
-      // Extend end date by days frozen + any additional extension
-      const extendDays = daysFrozen + (parseInt(req.body.extendDays) || 0);
-      newEndDate = new Date(originalEndDate);
-      newEndDate.setDate(newEndDate.getDate() + extendDays);
-      newEndDate = newEndDate.toISOString().split('T')[0];
-    } else {
-      // If no freeze info found, just extend by requested days from current end date
-      const extendDays = parseInt(req.body.extendDays) || 0;
-      if (member.end_date && extendDays > 0) {
-        const currentEnd = new Date(member.end_date);
-        currentEnd.setDate(currentEnd.getDate() + extendDays);
-        newEndDate = currentEnd.toISOString().split('T')[0];
-      }
+    // Use freeze_start_date from database, fallback to notes
+    let freezeStartDate = member.freeze_start_date;
+    if (!freezeStartDate) {
+      const freezeMatch = member.notes?.match(/\[FROZEN on ([\d-]+)\]/);
+      freezeStartDate = freezeMatch ? freezeMatch[1] : today;
     }
+    
+    // Set freeze_end_date to today (actual unfreeze date)
+    const freezeEndDate = today;
+    
+    // Calculate days frozen
+    const daysFrozen = Math.ceil((new Date(freezeEndDate) - new Date(freezeStartDate)) / (1000 * 60 * 60 * 24));
+    
+    // Parse original end date from notes
+    const endDateMatch = member.notes?.match(/Original end date: ([\d-]+)/);
+    const originalEndDate = endDateMatch ? endDateMatch[1] : member.end_date;
+    
+    // Extend end date by days frozen + any additional extension
+    const extendDays = daysFrozen + (parseInt(req.body.extendDays) || 0);
+    const newEndDate = new Date(originalEndDate);
+    newEndDate.setDate(newEndDate.getDate() + extendDays);
+    const newEndDateStr = newEndDate.toISOString().split('T')[0];
 
     // Determine new status based on end date
     let newStatus = 'active';
-    if (newEndDate) {
-      const daysUntilExpiry = Math.ceil((new Date(newEndDate) - new Date()) / (1000 * 60 * 60 * 24));
-      if (daysUntilExpiry <= 0) {
-        newStatus = 'expired';
-      } else if (daysUntilExpiry <= 7) {
-        newStatus = 'expiring_soon';
-      }
+    const daysUntilExpiry = Math.ceil((newEndDate - new Date()) / (1000 * 60 * 60 * 24));
+    if (daysUntilExpiry <= 0) {
+      newStatus = 'expired';
+    } else if (daysUntilExpiry <= 7) {
+      newStatus = 'expiring_soon';
     }
 
-    const unfreezeNote = `\n[UNFROZEN on ${new Date().toISOString().split('T')[0]}] New end date: ${newEndDate}. Status: ${newStatus}.`;
+    const unfreezeNote = `\n[UNFROZEN on ${today}] Days frozen: ${daysFrozen}. New end date: ${newEndDateStr}. Status: ${newStatus}.`;
     
+    // Update freeze_end_date but DON'T clear freeze_start_date or freeze_reason (keep historical data)
     await member.update({
       membership_status: newStatus,
-      end_date: newEndDate,
+      end_date: newEndDateStr,
+      freeze_end_date: freezeEndDate, // Set actual unfreeze date
       notes: (member.notes || '') + unfreezeNote
     });
 

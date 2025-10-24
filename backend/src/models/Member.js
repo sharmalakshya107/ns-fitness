@@ -69,6 +69,21 @@ const Member = sequelize.define('Member', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  freeze_start_date: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'freeze_start_date'
+  },
+  freeze_end_date: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'freeze_end_date'
+  },
+  freeze_reason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'freeze_reason'
+  },
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
