@@ -100,8 +100,8 @@ const Members = () => {
       if (response.ok) {
         const data = await response.json();
         setMembers(data.data.members);
-        setTotalPages(data.data.totalPages || 1);
-        setTotalMembers(data.data.total || 0);
+        setTotalPages(data.data.pagination?.totalPages || 1);
+        setTotalMembers(data.data.pagination?.totalItems || 0);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);

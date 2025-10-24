@@ -24,6 +24,9 @@ const Payments = () => {
   const [filterDuration, setFilterDuration] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalPayments, setTotalPayments] = useState(0);
 
   const [formData, setFormData] = useState({
     memberId: '',
@@ -42,6 +45,7 @@ const Payments = () => {
   // Debounced search - waits 800ms after user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to page 1 when searching
       fetchPayments();
     }, 800); // Wait 800ms after user stops typing
 
@@ -50,8 +54,14 @@ const Payments = () => {
 
   // Fetch when filters change (no debounce for filters)
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filters change
     fetchPayments();
   }, [filterMethod, filterDuration, startDate, endDate]);
+
+  // Fetch when page changes
+  useEffect(() => {
+    fetchPayments();
+  }, [currentPage]);
 
   const fetchPayments = async () => {
     try {
@@ -62,6 +72,8 @@ const Payments = () => {
       if (filterDuration) params.append('duration', filterDuration);
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
+      params.append('page', currentPage);
+      params.append('limit', '10');
 
       const response = await fetch(`${API_URL}/api/payments?${params}`, {
         headers: {
@@ -73,6 +85,8 @@ const Payments = () => {
       if (response.ok) {
         const data = await response.json();
         setPayments(data.data.payments);
+        setTotalPages(data.data.pagination?.totalPages || 1);
+        setTotalPayments(data.data.pagination?.totalItems || 0);
       }
     } catch (error) {
       console.error('Failed to fetch payments:', error);
@@ -605,6 +619,75 @@ const Payments = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="text-sm text-gray-700">
+              Showing page <span className="font-medium">{currentPage}</span> of{' '}
+              <span className="font-medium">{totalPages}</span>
+              {' '}({totalPayments} total payments)
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                ← Previous
+              </button>
+              
+              {/* Page Numbers */}
+              <div className="flex gap-1">
+                {[...Array(totalPages)].map((_, index) => {
+                  const pageNum = index + 1;
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    pageNum === 1 ||
+                    pageNum === totalPages ||
+                    (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                          currentPage === pageNum
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  } else if (
+                    pageNum === currentPage - 2 ||
+                    pageNum === currentPage + 2
+                  ) {
+                    return <span key={pageNum} className="px-2 py-2 text-gray-500">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Payment Modal */}
