@@ -266,20 +266,11 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Welcome to NS Fitness Management System
-          </p>
-        </div>
-        <button
-          onClick={() => navigate('/attendance')}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Clock className="h-5 w-5" />
-          Mark Attendance
-        </button>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Welcome to NS Fitness Management System
+        </p>
       </div>
 
       {/* Stats Grid */}
