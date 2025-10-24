@@ -59,13 +59,23 @@ const Batches = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      
+      // Convert camelCase to snake_case for backend
+      const batchData = {
+        name: formData.name,
+        start_time: formData.startTime,
+        end_time: formData.endTime,
+        capacity: formData.capacity,
+        description: formData.description
+      };
+      
       const response = await fetch(`${API_URL}/api/batches`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(batchData)
       });
 
       const data = await response.json();
@@ -87,13 +97,23 @@ const Batches = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      
+      // Convert camelCase to snake_case for backend
+      const batchData = {
+        name: formData.name,
+        start_time: formData.startTime,
+        end_time: formData.endTime,
+        capacity: formData.capacity,
+        description: formData.description
+      };
+      
       const response = await fetch(`${API_URL}/api/batches/${selectedBatch.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(batchData)
       });
 
       const data = await response.json();
