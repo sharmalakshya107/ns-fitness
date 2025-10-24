@@ -375,11 +375,17 @@ router.get('/birthdays', authenticateToken, async (req, res) => {
       if (!member.date_of_birth) return;
       
       const dob = new Date(member.date_of_birth);
-      const birthdayThisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+      const dobMonth = dob.getUTCMonth(); // Use UTC to avoid timezone shifts
+      const dobDay = dob.getUTCDate();
+      
+      const todayMonth = today.getMonth();
+      const todayDay = today.getDate();
+      
+      const tomorrowMonth = tomorrow.getMonth();
+      const tomorrowDay = tomorrow.getDate();
       
       // Check if birthday is today
-      if (birthdayThisYear.getDate() === today.getDate() && 
-          birthdayThisYear.getMonth() === today.getMonth()) {
+      if (dobMonth === todayMonth && dobDay === todayDay) {
         const age = today.getFullYear() - dob.getFullYear();
         todayBirthdays.push({
           id: member.id,
@@ -392,8 +398,7 @@ router.get('/birthdays', authenticateToken, async (req, res) => {
       }
       
       // Check if birthday is tomorrow
-      if (birthdayThisYear.getDate() === tomorrow.getDate() && 
-          birthdayThisYear.getMonth() === tomorrow.getMonth()) {
+      if (dobMonth === tomorrowMonth && dobDay === tomorrowDay) {
         const age = tomorrow.getFullYear() - dob.getFullYear();
         tomorrowBirthdays.push({
           id: member.id,

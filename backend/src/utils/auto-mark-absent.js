@@ -1,14 +1,15 @@
 const { Member, Attendance, Batch } = require('../models');
 const { Op } = require('sequelize');
+const { getISTDate } = require('./timezone');
 
 /**
  * Automatically mark absent for members who haven't checked in today
- * This should be run at end of day (e.g., 11:59 PM)
+ * This should be run at end of day (e.g., 11:59 PM IST)
  */
 async function autoMarkAbsent() {
   try {
-    const today = new Date().toISOString().split('T')[0];
-    console.log(`🤖 Auto-marking absent for date: ${today}`);
+    const today = getISTDate(); // Use IST date
+    console.log(`🤖 Auto-marking absent for date: ${today} (IST)`);
 
     // Get all active members with batches
     const activeMembers = await Member.findAll({
