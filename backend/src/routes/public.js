@@ -330,14 +330,14 @@ router.post('/self-checkin', [
     }
 
     // Step 6: Check if attendance already marked today
-    const today = getISTDate(); // Get today's date in IST
+    const todayDate = getISTDate(); // Get today's date in IST
     
-    console.log(`🔍 Checking existing attendance for member ${member.id} on ${today}`);
+    console.log(`🔍 Checking existing attendance for member ${member.id} on ${todayDate}`);
     
     const existingAttendance = await Attendance.findOne({
       where: {
         member_id: member.id,
-        date: today
+        date: todayDate
       }
     });
 
@@ -368,7 +368,7 @@ router.post('/self-checkin', [
       attendance = await Attendance.create({
         member_id: member.id,
         batch_id: member.batch_id,
-        date: today,
+        date: todayDate,
         status: status,
         check_in_time: checkInTime, // Full DATE object, not just time string
         marked_by: null, // NULL means self-marked by member
