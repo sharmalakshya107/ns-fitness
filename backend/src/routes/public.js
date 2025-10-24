@@ -210,12 +210,14 @@ router.post('/self-checkin', [
     const status = getAttendanceStatus(member.batch.start_time, member.batch.end_time);
 
     // Step 7: Mark attendance
+    const checkInTime = new Date(); // Full date-time object for database
+    
     const attendance = await Attendance.create({
       member_id: member.id,
       batch_id: member.batch_id,
       date: today,
       status: status,
-      check_in_time: new Date().toTimeString().split(' ')[0].substring(0, 5), // HH:MM format
+      check_in_time: checkInTime, // Full DATE object, not just time string
       marked_by: null, // NULL means self-marked by member
       notes: 'Self check-in via mobile'
     });
@@ -230,7 +232,7 @@ router.post('/self-checkin', [
         status: status,
         batchName: member.batch.name,
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
-        checkInTime: attendance.check_in_time,
+        checkInTime: checkInTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
         distance: Math.round(distance)
       }
     });
