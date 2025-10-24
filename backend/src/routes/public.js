@@ -207,7 +207,7 @@ router.post('/self-checkin', [
       // Within trial period - allow but show remaining days
       trialWarning = {
         daysPassed: daysSinceRegistration,
-        daysRemaining: 4 - daysSinceRegistration, // 4 because if on day 1, should show 3 days left
+        daysRemaining: 3 - daysSinceRegistration, // Days left after today
         totalTrialDays: 3
       };
     }
