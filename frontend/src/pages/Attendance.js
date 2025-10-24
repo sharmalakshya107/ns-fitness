@@ -41,6 +41,7 @@ const Attendance = () => {
     try {
       const token = localStorage.getItem('token');
       const params = new URLSearchParams();
+      params.append('limit', '1000'); // Get all members for attendance
       if (selectedBatch) params.append('batchId', selectedBatch);
 
       const response = await fetch(`${API_URL}/api/members?${params}`, {
