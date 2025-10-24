@@ -173,11 +173,43 @@ router.post('/self-checkin', [
       });
     }
 
-    // Step 2: Check if member has active membership
-    if (member.membership_status === 'expired' || member.membership_status === 'pending') {
+    // Step 2: Check membership status
+    let trialWarning = null;
+    const today = new Date(getISTDate());
+    
+    // Block expired members
+    if (member.membership_status === 'expired') {
       return res.status(403).json({
         success: false,
-        message: `Your membership is ${member.membership_status}. Please contact admin.`
+        message: 'Your membership has expired. Please renew to continue accessing the gym.\n\n📞 Contact: Nagendra Sain (Bunty)\n📱 Phone: +91-7737326829'
+      });
+    }
+    
+    // Check pending members - allow 3-day free trial
+    if (member.membership_status === 'pending') {
+      const registrationDate = new Date(member.createdAt);
+      const daysSinceRegistration = Math.ceil((today - registrationDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysSinceRegistration > 3) {
+        return res.status(403).json({
+          success: false,
+          message: 'Your free trial period (3 days) is over. Please complete payment to continue.\n\n📞 Contact: Nagendra Sain (Bunty)\n📱 Phone: +91-7737326829'
+        });
+      }
+      
+      // Within trial period - allow but show remaining days
+      trialWarning = {
+        daysPassed: daysSinceRegistration,
+        daysRemaining: 3 - daysSinceRegistration,
+        totalTrialDays: 3
+      };
+    }
+    
+    // Block inactive members
+    if (member.membership_status === 'inactive') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is inactive. Please contact admin.'
       });
     }
 
@@ -400,13 +432,16 @@ router.post('/self-checkin', [
       message: message,
       data: {
         memberName: member.name,
+        membershipStatus: member.membership_status,
         status: status,
         batchName: member.batch.name,
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
         checkInTime: formattedTime,
         distance: Math.round(distance), // Distance from gym (useful feedback for member)
+        endDate: member.end_date,
         lateWarning: lateWarning,
-        birthdayMessage: birthdayMessage
+        birthdayMessage: birthdayMessage,
+        trialWarning: trialWarning
       }
     });
 

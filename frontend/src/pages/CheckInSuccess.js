@@ -104,6 +104,33 @@ function CheckInSuccess() {
             </div>
           )}
 
+          {/* Free Trial Warning (Pending Membership) */}
+          {data.trialWarning && (
+            <div className="mt-6 p-4 bg-purple-50 border-2 border-purple-300 rounded-lg">
+              <h3 className="text-lg font-bold text-purple-800 mb-3 flex items-center gap-2">
+                🎁 Free Trial Period
+              </h3>
+              <div className="space-y-2 text-sm text-purple-900">
+                <p className="font-semibold text-base">
+                  You're on a {data.trialWarning.totalTrialDays}-day free trial! (Day {data.trialWarning.daysPassed})
+                </p>
+                <p className="text-green-700 font-bold">
+                  ⏰ Trial Days Remaining: {data.trialWarning.daysRemaining}
+                </p>
+                <p className="mt-3">
+                  Enjoying the gym? Complete your payment to continue after the trial period!
+                </p>
+                <div className="mt-4 pt-4 border-t border-purple-200 bg-purple-100 -mx-4 -mb-4 p-4 rounded-b-lg">
+                  <p className="font-semibold text-center">
+                    📞 Join Full Membership - Contact:<br />
+                    <span className="text-lg">Nagendra Sain (Bunty)</span><br />
+                    <span className="text-sm">📱 +91-7737326829</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Late Warning */}
           {data.lateWarning && (
             <div className="mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-lg">
