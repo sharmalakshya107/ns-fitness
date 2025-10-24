@@ -212,14 +212,11 @@ function SelfCheckIn() {
           </div>
         </div>
 
-        {/* Back to Home */}
+        {/* Help Section */}
         <div className="text-center mt-6">
-          <button
-            onClick={() => navigate('/')}
-            className="text-blue-600 hover:underline text-sm"
-          >
-            ← Back to Home
-          </button>
+          <p className="text-sm text-gray-600">
+            First time? <a href="/register" className="text-blue-600 hover:underline">Register here</a>
+          </p>
         </div>
       </div>
     </div>

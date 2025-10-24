@@ -127,12 +127,12 @@ function CheckInSuccess() {
           >
             Done
           </button>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border border-gray-300 transition-colors"
+          <a
+            href="/register"
+            className="block text-center w-full py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border border-gray-300 transition-colors"
           >
-            Back to Home
-          </button>
+            New Member? Register Here
+          </a>
         </div>
 
         {/* Footer Message */}
