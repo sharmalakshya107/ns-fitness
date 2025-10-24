@@ -12,11 +12,6 @@ function CheckInSuccess() {
     return null;
   }
 
-  // Debug: Log the data to see what we're getting
-  console.log('Check-in success data:', data);
-  console.log('endDate:', data.endDate);
-  console.log('membershipStatus:', data.membershipStatus);
-
   const isLate = data.status === 'late';
 
   return (
@@ -30,7 +25,7 @@ function CheckInSuccess() {
             <CheckCircle className="w-16 h-16 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {isLate ? '⏰ Marked as LATE' : '✅ Check-In Successful!'}
+            {isLate ? '⏰ Marked as LATE' : 'Check-In Successful!'}
           </h1>
           <p className="text-gray-600">
             Welcome, {data.memberName}!
@@ -105,8 +100,6 @@ function CheckInSuccess() {
                 const expiryDate = new Date(data.endDate);
                 const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
                 
-                console.log('Rendering membership card - Days remaining:', daysRemaining);
-                
                 return (
                   <>
                     <div className="flex items-center justify-between mb-3">
@@ -175,18 +168,7 @@ function CheckInSuccess() {
                 );
               })()}
             </div>
-          ) : (
-            data.membershipStatus !== 'pending' && (
-              <div className="mt-6 p-4 bg-gray-50 border border-gray-300 rounded-lg">
-                <p className="text-sm text-gray-600 text-center">
-                  ⚠️ Membership end date not set. Please contact admin.
-                </p>
-                <p className="text-xs text-gray-500 text-center mt-1">
-                  Debug: endDate={data.endDate ? 'exists' : 'null'}, status={data.membershipStatus}
-                </p>
-              </div>
-            )
-          )}
+          ) : null}
 
           {/* Birthday Message */}
           {data.birthdayMessage && (
