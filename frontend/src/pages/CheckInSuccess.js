@@ -87,6 +87,18 @@ function CheckInSuccess() {
             </div>
           </div>
 
+          {/* Birthday Message */}
+          {data.birthdayMessage && (
+            <div className="mt-6 p-6 bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-300 rounded-lg">
+              <h3 className="text-xl font-bold text-pink-700 mb-3 text-center">
+                {data.birthdayMessage.title}
+              </h3>
+              <p className="text-center text-gray-700 whitespace-pre-line">
+                {data.birthdayMessage.message}
+              </p>
+            </div>
+          )}
+
           {/* Late Warning */}
           {data.lateWarning && (
             <div className="mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-lg">

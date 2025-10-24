@@ -286,6 +286,22 @@ router.post('/self-checkin', [
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const formattedTime = `${hour12}:${minutes} ${ampm}`;
 
+    // Check if today is member's birthday
+    let birthdayMessage = null;
+    if (member.date_of_birth) {
+      const todayDate = new Date(today);
+      const dob = new Date(member.date_of_birth);
+      
+      // Check if today's month and day match birthday month and day
+      if (todayDate.getMonth() === dob.getMonth() && todayDate.getDate() === dob.getDate()) {
+        const age = todayDate.getFullYear() - dob.getFullYear();
+        birthdayMessage = {
+          title: `🎉 Happy Birthday, ${member.name}! 🎂`,
+          message: `Wishing you an amazing ${age}th year ahead!\nHave a great workout on your special day!`
+        };
+      }
+    }
+
     res.json({
       success: true,
       message: message,
@@ -296,7 +312,8 @@ router.post('/self-checkin', [
         batchTime: `${member.batch.start_time} - ${member.batch.end_time}`,
         checkInTime: formattedTime,
         distance: Math.round(distance), // Distance from gym (useful feedback for member)
-        lateWarning: lateWarning
+        lateWarning: lateWarning,
+        birthdayMessage: birthdayMessage
       }
     });
 
