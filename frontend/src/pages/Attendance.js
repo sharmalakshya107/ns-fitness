@@ -65,6 +65,7 @@ const Attendance = () => {
       const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       params.append('date', selectedDate);
+      params.append('limit', '1000'); // Get all attendance records
       if (selectedBatch) params.append('batchId', selectedBatch);
 
       const response = await fetch(`${API_URL}/api/attendance?${params}`, {
