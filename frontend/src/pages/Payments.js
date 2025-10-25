@@ -100,7 +100,8 @@ const Payments = () => {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/members`, {
+      // Fetch all members without pagination limit for payment dropdown
+      const response = await fetch(`${API_URL}/api/members?limit=10000`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

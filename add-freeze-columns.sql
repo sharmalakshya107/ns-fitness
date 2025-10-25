@@ -16,3 +16,4 @@ WHERE table_name = 'members'
   AND column_name IN ('freeze_start_date', 'freeze_end_date', 'freeze_reason')
 ORDER BY column_name;
 
+
