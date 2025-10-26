@@ -27,6 +27,6 @@
   "orientation": "portrait",
   "theme_color": "#4CAF50",
   "background_color": "#ffffff",
-  "scope": "/"
+  "scope": "/check-in"
 }
 
