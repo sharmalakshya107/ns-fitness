@@ -13,6 +13,8 @@ function SelfCheckIn() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
 
   useEffect(() => {
     // Auto-detect location when page loads
@@ -27,7 +29,41 @@ function SelfCheckIn() {
         email: savedEmail || ''
       });
     }
+
+    // Listen for PWA install prompt
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Check if app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallButton(false);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      toast.success('App installed! Find it on your home screen! 🎉');
+      setShowInstallButton(false);
+    }
+    
+    setDeferredPrompt(null);
+  };
 
   const getLocation = () => {
     if (!navigator.geolocation) {
@@ -145,6 +181,24 @@ function SelfCheckIn() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">NS Fitness</h1>
           <p className="text-gray-600">Self Check-In</p>
         </div>
+
+        {/* Install App Button - PWA */}
+        {showInstallButton && (
+          <div className="mb-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl shadow-lg p-4 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="font-bold text-sm mb-1">📱 Install NS Fitness App</p>
+                <p className="text-xs opacity-90">Quick check-in without QR code scanning!</p>
+              </div>
+              <button
+                onClick={handleInstallClick}
+                className="ml-3 bg-white text-green-600 font-bold px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-sm shadow-md"
+              >
+                Install
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Main Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
