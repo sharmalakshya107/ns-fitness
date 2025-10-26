@@ -1,10 +1,8 @@
 // NS Fitness - Service Worker for PWA
 // This enables offline functionality and "Add to Home Screen"
 
-const CACHE_NAME = 'ns-fitness-v1';
+const CACHE_NAME = 'ns-fitness-v2'; // Updated version to clear old cache
 const urlsToCache = [
-  '/',
-  '/check-in',
   '/logo.png',
   '/logo192.png',
   '/logo512.png',
@@ -16,25 +14,56 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        console.log('Service Worker: Caching files');
+        return cache.addAll(urlsToCache).catch(err => {
+          console.error('Service Worker: Cache addAll failed', err);
+        });
       })
   );
   self.skipWaiting();
 });
 
-// Fetch event - serve from cache if available
+// Fetch event - NETWORK FIRST strategy (fetch fresh, fallback to cache)
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    // Try network first
+    fetch(event.request)
       .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+        // Clone the response
+        const responseToCache = response.clone();
+        
+        // Cache the new response for static assets only
+        if (event.request.url.match(/\.(png|jpg|jpeg|svg|gif|webp|css|js)$/)) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        return fetch(event.request);
-      }
-    )
+        
+        return response;
+      })
+      .catch(() => {
+        // Network failed, try cache
+        return caches.match(event.request)
+          .then((response) => {
+            if (response) {
+              console.log('Service Worker: Serving from cache (offline)', event.request.url);
+              return response;
+            }
+            // No cache, return offline page or error
+            return new Response('Offline - Please check your connection', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({
+                'Content-Type': 'text/plain'
+              })
+            });
+          });
+      })
   );
 });
 
