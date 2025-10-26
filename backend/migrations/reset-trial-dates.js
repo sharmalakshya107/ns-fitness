@@ -46,10 +46,10 @@ async function resetTrialDates() {
     
     console.log('\n🔄 Resetting trial dates to TODAY...\n');
     
-    // Reset createdAt for all pending members to today
+    // Reset created_at (column name in PostgreSQL) for all pending members to today
     const [updatedCount] = await sequelize.query(`
       UPDATE members 
-      SET "createdAt" = NOW() 
+      SET created_at = NOW() 
       WHERE membership_status = 'pending'
     `);
     
