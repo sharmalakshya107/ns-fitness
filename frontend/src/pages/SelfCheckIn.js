@@ -65,13 +65,28 @@ function SelfCheckIn() {
     setDeferredPrompt(null);
   };
 
-  const getLocation = () => {
+  const getLocation = async () => {
     if (!navigator.geolocation) {
       toast.error('Geolocation is not supported by your browser');
       return;
     }
 
     setGettingLocation(true);
+
+    // Check permission state first
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+      
+      // If permission is denied, show helpful instructions
+      if (permissionStatus.state === 'denied') {
+        setGettingLocation(false);
+        showPermissionDeniedHelp();
+        return;
+      }
+    } catch (err) {
+      console.log('Permission API not supported, continuing with geolocation');
+    }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocation({
@@ -79,19 +94,163 @@ function SelfCheckIn() {
           longitude: position.coords.longitude
         });
         setGettingLocation(false);
-        toast.success('Location detected!');
+        toast.success('📍 Location detected!');
       },
       (error) => {
         setGettingLocation(false);
         console.error('Location error:', error);
-        toast.error('Unable to get your location. Please enable location access.');
+        
+        // Handle different error types
+        if (error.code === 1) {
+          // PERMISSION_DENIED
+          showPermissionDeniedHelp();
+        } else if (error.code === 2) {
+          // POSITION_UNAVAILABLE (GPS off or weak signal)
+          showGPSOffHelp();
+        } else if (error.code === 3) {
+          // TIMEOUT
+          toast.error('Location request timed out. Please try again.', {
+            duration: 5000,
+            icon: '⏱️'
+          });
+        } else {
+          toast.error('Unable to get your location. Please check your settings.');
+        }
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000,
         maximumAge: 0
       }
     );
+  };
+
+  const showPermissionDeniedHelp = () => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isChrome = /Chrome/i.test(navigator.userAgent);
+    const isSafari = /Safari/i.test(navigator.userAgent) && !isChrome;
+
+    let instructions = '';
+    
+    if (isAndroid && isChrome) {
+      instructions = `
+📱 Android Chrome Instructions:
+
+1. Click the 🔒 lock icon (left of URL)
+2. Click "Permissions"
+3. Find "Location" → Change to "Allow"
+4. Refresh this page
+5. Click "Get Location" again
+
+OR
+
+Settings → Site Settings → Location → Find this site → Allow
+      `.trim();
+    } else if (isIOS && isSafari) {
+      instructions = `
+📱 iPhone Safari Instructions:
+
+1. Go to iPhone Settings
+2. Scroll down → Find "Safari"
+3. Tap "Location"
+4. Select "Ask" or "Allow"
+5. Come back & refresh this page
+6. Allow location when asked
+
+Note: Location must be ON in Settings → Privacy → Location Services
+      `.trim();
+    } else {
+      instructions = `
+🌐 Browser Instructions:
+
+1. Click the 🔒 lock/info icon near the URL
+2. Find "Location" or "Permissions"
+3. Change to "Allow"
+4. Refresh this page
+5. Try again
+
+Make sure your device's Location/GPS is also turned ON!
+      `.trim();
+    }
+
+    toast.error(instructions, {
+      duration: 15000,
+      style: {
+        background: '#FEE2E2',
+        color: '#991B1B',
+        fontWeight: '600',
+        padding: '20px',
+        borderRadius: '12px',
+        border: '2px solid #DC2626',
+        maxWidth: '500px',
+        whiteSpace: 'pre-line',
+        fontSize: '13px',
+        lineHeight: '1.6'
+      }
+    });
+  };
+
+  const showGPSOffHelp = () => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    let instructions = '';
+    
+    if (isAndroid) {
+      instructions = `
+📍 Your GPS/Location is OFF!
+
+Android Steps:
+1. Swipe down from top (notification panel)
+2. Find "Location" icon 📍
+3. Tap it to turn ON
+4. Come back to this page
+5. Click "Get Location" again
+
+OR
+
+Settings → Location → Turn ON
+      `.trim();
+    } else if (isIOS) {
+      instructions = `
+📍 Your Location Services are OFF!
+
+iPhone Steps:
+1. Go to Settings
+2. Tap "Privacy & Security"
+3. Tap "Location Services"
+4. Turn it ON (green)
+5. Come back to this page
+6. Click "Get Location" again
+      `.trim();
+    } else {
+      instructions = `
+📍 Your GPS/Location is OFF!
+
+Please:
+1. Turn ON Location/GPS in your phone settings
+2. Come back to this page
+3. Try again
+      `.trim();
+    }
+
+    toast.error(instructions, {
+      duration: 12000,
+      style: {
+        background: '#FEF3C7',
+        color: '#92400E',
+        fontWeight: '600',
+        padding: '20px',
+        borderRadius: '12px',
+        border: '2px solid #F59E0B',
+        maxWidth: '500px',
+        whiteSpace: 'pre-line',
+        fontSize: '13px',
+        lineHeight: '1.6'
+      },
+      icon: '📍'
+    });
   };
 
   const handleSubmit = async (e) => {
