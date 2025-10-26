@@ -4,13 +4,8 @@ import { getISTDate } from '../utils/timezone';
 import { 
   Plus, 
   Search, 
-  Filter, 
-  Eye,
   Download,
-  Trash2,
-  CreditCard,
-  Calendar,
-  DollarSign
+  Trash2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

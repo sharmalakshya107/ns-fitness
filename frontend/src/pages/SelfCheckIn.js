@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { MapPin, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, AlertCircle } from 'lucide-react';
 import API_URL from '../config';
 
 function SelfCheckIn() {
