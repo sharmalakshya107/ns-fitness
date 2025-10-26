@@ -224,79 +224,211 @@ const Payments = () => {
         <head>
           <title>Payment Receipt - ${payment.receipt_number || payment.receiptNumber}</title>
           <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
             body {
-              font-family: Arial, sans-serif;
-              max-width: 800px;
-              margin: 40px auto;
-              padding: 20px;
-              background: #f5f5f5;
+              font-family: 'Segoe UI', Arial, sans-serif;
+              max-width: 850px;
+              margin: 0 auto;
+              padding: 20px 15px;
+              background: #f8f9fa;
+              color: #000;
             }
             .receipt {
-              background: white;
-              padding: 40px;
-              border-radius: 8px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              background: #ffffff;
+              padding: 30px;
+              box-shadow: 0 0 20px rgba(0,0,0,0.08);
+              border: 1px solid #e0e0e0;
             }
+            
+            /* Header Section with Space for Address */
             .header {
               text-align: center;
-              border-bottom: 3px solid #4CAF50;
-              padding-bottom: 20px;
-              margin-bottom: 30px;
+              padding: 20px 0 15px 0;
+              border-bottom: 2px solid #4CAF50;
+              margin-bottom: 20px;
+            }
+            .header-logo {
+              width: 65px;
+              height: 65px;
+              margin: 0 auto 10px;
+              display: block;
             }
             .header h1 {
-              margin: 0;
-              color: #4CAF50;
-              font-size: 32px;
+              font-size: 28px;
+              font-weight: 700;
+              color: #000;
+              margin: 0 0 6px 0;
+              letter-spacing: 0.5px;
             }
-            .header p {
-              margin: 5px 0;
+            .gym-info {
+              margin: 10px 0 0 0;
+              padding: 10px 0 0 0;
+              border-top: 1px solid #e0e0e0;
+            }
+            .gym-info p {
+              font-size: 12px;
               color: #666;
+              margin: 3px 0;
+              line-height: 1.5;
             }
             .receipt-no {
-              background: #4CAF50;
-              color: white;
-              padding: 10px 20px;
-              border-radius: 4px;
               display: inline-block;
-              margin: 20px 0;
-              font-size: 18px;
-              font-weight: bold;
+              background: #4CAF50;
+              color: #ffffff;
+              padding: 8px 16px;
+              border-radius: 5px;
+              font-size: 14px;
+              font-weight: 700;
+              margin: 15px 0 0 0;
+              letter-spacing: 0.5px;
             }
+            
+            /* Member Details Box */
             .details {
-              margin: 30px 0;
+              background: #fafafa;
+              border: 1px solid #e0e0e0;
+              border-radius: 6px;
+              padding: 15px;
+              margin: 18px 0;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.04);
             }
             .detail-row {
               display: flex;
               justify-content: space-between;
-              padding: 15px 0;
-              border-bottom: 1px solid #eee;
+              align-items: center;
+              padding: 9px 0;
+              border-bottom: 1px solid #e8e8e8;
+            }
+            .detail-row:last-child {
+              border-bottom: none;
             }
             .detail-label {
-              font-weight: bold;
-              color: #555;
+              font-weight: 600;
+              color: #333;
+              font-size: 13px;
+              letter-spacing: 0.3px;
             }
             .detail-value {
-              color: #333;
-            }
-            .amount-section {
-              background: #f9f9f9;
-              padding: 20px;
-              margin: 30px 0;
-              border-radius: 4px;
+              color: #000;
+              font-size: 13px;
+              font-weight: 500;
               text-align: right;
             }
-            .amount-section h2 {
-              margin: 0;
-              color: #4CAF50;
-              font-size: 36px;
+            
+            /* Total Amount Section */
+            .amount-section {
+              background: #f0f9f0;
+              border: 2px solid #4CAF50;
+              border-radius: 8px;
+              padding: 18px 25px;
+              margin: 20px 0;
+              text-align: center;
+              box-shadow: 0 3px 8px rgba(76, 175, 80, 0.15);
             }
+            .amount-section p {
+              font-size: 13px;
+              color: #555;
+              font-weight: 600;
+              margin: 0 0 8px 0;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            }
+            .amount-section h2 {
+              font-size: 38px;
+              font-weight: 800;
+              color: #4CAF50;
+              margin: 0;
+              letter-spacing: 1px;
+            }
+            
+            /* Terms & Signature Section */
+            .signature-section {
+              margin-top: 20px;
+              display: flex;
+              gap: 15px;
+              align-items: stretch;
+            }
+            .terms-section {
+              flex: 0 0 260px;
+              background: #fafafa;
+              border: 1px solid #e0e0e0;
+              border-radius: 6px;
+              padding: 14px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            }
+            .terms-section strong {
+              display: block;
+              font-size: 12px;
+              font-weight: 700;
+              color: #000;
+              margin: 0 0 8px 0;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            .terms-section p {
+              font-size: 10px;
+              color: #555;
+              line-height: 1.6;
+              margin: 5px 0;
+            }
+            .signature-box {
+              flex: 1;
+              background: #fafafa;
+              border: 1px solid #e0e0e0;
+              border-radius: 6px;
+              padding: 15px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            }
+            .signature-image {
+              width: 100%;
+              max-width: 340px;
+              height: 120px;
+              margin: 0 auto 12px;
+              background: url('/signature.png') center center no-repeat;
+              background-size: contain;
+            }
+            .signature-line {
+              width: 100%;
+              max-width: 320px;
+              border-top: 2px solid #333;
+              padding-top: 8px;
+              text-align: center;
+              font-size: 12px;
+              font-weight: 700;
+              color: #000;
+              margin: 4px 0;
+            }
+            .signature-label {
+              font-size: 11px;
+              color: #666;
+              font-weight: 600;
+              margin-top: 4px;
+            }
+            
+            /* Footer */
             .footer {
               text-align: center;
-              margin-top: 40px;
-              padding-top: 20px;
-              border-top: 2px solid #eee;
+              margin-top: 20px;
+              padding-top: 15px;
+              border-top: 1px solid #e0e0e0;
+            }
+            .footer p {
+              font-size: 10px;
               color: #888;
-              font-size: 14px;
+              line-height: 1.5;
+              margin: 3px 0;
+            }
+            .footer p:first-child {
+              font-weight: 600;
+              color: #666;
             }
             .print-button {
               background: #4CAF50;
@@ -313,96 +445,174 @@ const Payments = () => {
             .print-button:hover {
               background: #45a049;
             }
+            
+            /* Print Styles - One Page Fit */
             @media print {
               body {
                 background: white !important;
                 margin: 0;
-                padding: 15mm;
+                padding: 6mm 8mm;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
               }
               .receipt {
                 box-shadow: none !important;
-                padding: 0;
+                border: none !important;
+                padding: 0 !important;
                 page-break-inside: avoid;
               }
               .print-button {
                 display: none !important;
               }
               .header {
-                page-break-after: avoid;
+                padding: 10px 0 8px 0 !important;
+                margin-bottom: 12px !important;
+                border-bottom: 2px solid #000 !important;
+              }
+              .header-logo {
+                width: 50px !important;
+                height: 50px !important;
+                margin: 0 auto 6px !important;
+                filter: contrast(1.2) !important;
               }
               .header h1 {
+                font-size: 22px !important;
+                margin: 0 0 4px 0 !important;
                 color: #000 !important;
-                font-size: 28px !important;
-                font-weight: bold !important;
               }
-              .header p {
-                color: #000 !important;
-                font-size: 12px !important;
+              .gym-info {
+                margin: 6px 0 0 0 !important;
+                padding: 6px 0 0 0 !important;
+              }
+              .gym-info p {
+                font-size: 10px !important;
+                margin: 2px 0 !important;
+                color: #333 !important;
+                line-height: 1.3 !important;
               }
               .receipt-no {
                 background: #000 !important;
                 color: #fff !important;
-                border: 2px solid #000 !important;
-                padding: 8px 16px !important;
-                font-weight: bold !important;
+                padding: 6px 14px !important;
+                font-size: 12px !important;
+                margin: 10px 0 0 0 !important;
+                border: none !important;
               }
               .details {
-                page-break-inside: avoid;
+                background: #fafafa !important;
+                border: 1px solid #d0d0d0 !important;
+                padding: 12px !important;
+                margin: 12px 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
               }
               .detail-row {
-                border-bottom: 1px solid #000 !important;
-                padding: 10px 0 !important;
+                padding: 7px 0 !important;
+                border-bottom: 1px solid #ddd !important;
               }
-              .detail-label {
-                color: #000 !important;
-                font-weight: bold !important;
-                font-size: 13px !important;
-              }
+              .detail-label,
               .detail-value {
+                font-size: 11px !important;
                 color: #000 !important;
-                font-weight: 600 !important;
-                font-size: 13px !important;
               }
               .amount-section {
-                page-break-inside: avoid;
-                margin: 20px 0;
                 background: #f5f5f5 !important;
                 border: 2px solid #000 !important;
-                padding: 15px !important;
+                padding: 14px 20px !important;
+                margin: 14px 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .amount-section p {
+                font-size: 11px !important;
+                margin: 0 0 6px 0 !important;
+                color: #333 !important;
               }
               .amount-section h2 {
+                font-size: 30px !important;
                 color: #000 !important;
-                font-size: 24px !important;
-                font-weight: bold !important;
+              }
+              .signature-section {
+                margin-top: 14px !important;
+                gap: 12px !important;
+              }
+              .terms-section {
+                flex: 0 0 240px !important;
+                background: #fafafa !important;
+                border: 1px solid #d0d0d0 !important;
+                padding: 10px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .terms-section strong {
+                font-size: 10px !important;
+                margin: 0 0 6px 0 !important;
+                color: #000 !important;
+              }
+              .terms-section p {
+                font-size: 9px !important;
+                margin: 4px 0 !important;
+                color: #333 !important;
+                line-height: 1.4 !important;
+              }
+              .signature-box {
+                background: #fafafa !important;
+                border: 1px solid #d0d0d0 !important;
+                padding: 12px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .signature-image {
+                height: 100px !important;
+                max-width: 300px !important;
+                margin: 0 auto 10px !important;
+                filter: contrast(1.25) brightness(0.95) !important;
+              }
+              .signature-line {
+                font-size: 11px !important;
+                color: #000 !important;
+                padding-top: 6px !important;
+                max-width: 280px !important;
+              }
+              .signature-label {
+                font-size: 10px !important;
+                color: #555 !important;
+                margin-top: 3px !important;
               }
               .footer {
-                page-break-before: avoid;
-                margin-top: 20px;
-                padding-top: 15px;
-                border-top: 2px solid #000 !important;
+                margin-top: 12px !important;
+                padding-top: 10px !important;
+                border-top: 1px solid #ccc !important;
               }
               .footer p {
-                margin: 5px 0;
-                color: #000 !important;
-                font-size: 11px !important;
-                font-weight: 500 !important;
+                font-size: 9px !important;
+                margin: 2px 0 !important;
+                color: #666 !important;
+                line-height: 1.3 !important;
               }
             }
           </style>
         </head>
         <body>
           <div class="receipt">
+            <!-- Header with Logo and Space for Address -->
             <div class="header">
-              <h1>🏋️ NS FITNESS</h1>
-              <p>Gym Management System</p>
-              <p>Payment Receipt</p>
+              <img src="/logo.png" alt="NS Fitness Logo" class="header-logo" />
+              <h1>NS FITNESS</h1>
+              
+              <!-- Gym Address and Contact Info -->
+              <div class="gym-info">
+                <p>📍 2nd Floor, Madhav's Tower, Jaipur Road, Alwar</p>
+                <p>📞 Phone: +91-7737326829</p>
+                <p style="margin-top: 8px; font-weight: 600;">Payment Receipt</p>
+              </div>
+              
               <div class="receipt-no">
                 Receipt #: ${payment.receipt_number || payment.receiptNumber || 'N/A'}
               </div>
             </div>
             
+            <!-- Member Details Section -->
             <div class="details">
               <div class="detail-row">
                 <span class="detail-label">Member Name:</span>
@@ -434,15 +644,34 @@ const Payments = () => {
               </div>
             </div>
             
+            <!-- Total Amount Section (Highlighted) -->
             <div class="amount-section">
-              <p style="margin: 0; color: #666;">Total Amount Paid</p>
+              <p>Total Amount Paid</p>
               <h2>₹${payment.amount ? payment.amount.toLocaleString('en-IN') : '0'}</h2>
             </div>
             
+            <!-- Terms & Signature Section -->
+            <div class="signature-section">
+              <div class="terms-section">
+                <strong>Terms & Conditions:</strong>
+                <p>• Membership is non-transferable and valid only for the specified period.</p>
+                <p>• All payments are non-refundable once processed.</p>
+                <p>• Please bring this receipt for any queries or disputes.</p>
+                <p>• Management reserves the right to revoke membership for misconduct.</p>
+                <p>• Lost receipts will not be reissued.</p>
+              </div>
+              <div class="signature-box">
+                <div class="signature-image"></div>
+                <div class="signature-line">Authorized Signatory</div>
+                <div class="signature-label">NS Fitness</div>
+              </div>
+            </div>
+            
+            <!-- Footer -->
             <div class="footer">
-              <p><strong>Thank you for your payment!</strong></p>
-              <p style="font-size: 12px;">This is a computer-generated receipt. For any queries, please contact gym administration.</p>
-              <p style="font-size: 11px; margin-top: 10px;">Generated: ${new Date().toLocaleString('en-IN')}</p>
+              <p>Thank you for your payment!</p>
+              <p>This is a computer-generated receipt. For any queries, please contact gym administration.</p>
+              <p>Generated: ${new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
             </div>
             
             <button class="print-button" onclick="window.print()">🖨️ Print Receipt</button>

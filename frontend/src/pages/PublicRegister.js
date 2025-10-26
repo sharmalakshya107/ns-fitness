@@ -112,9 +112,11 @@ const PublicRegister = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
-            <UserPlus className="h-8 w-8 text-white" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="NS Fitness Logo" 
+            className="mx-auto h-24 w-24 object-contain"
+          />
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
             Join NS Fitness
           </h2>

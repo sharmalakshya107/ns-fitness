@@ -137,9 +137,11 @@ function SelfCheckIn() {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500 rounded-full mb-4">
-            <CheckCircle className="w-12 h-12 text-white" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="NS Fitness Logo" 
+            className="mx-auto h-20 w-20 object-contain mb-4"
+          />
           <h1 className="text-3xl font-bold text-gray-800 mb-2">NS Fitness</h1>
           <p className="text-gray-600">Self Check-In</p>
         </div>

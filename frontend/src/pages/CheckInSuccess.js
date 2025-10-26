@@ -19,10 +19,17 @@ function CheckInSuccess() {
       <div className="max-w-md mx-auto">
         {/* Success Animation */}
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 animate-bounce ${
-            isLate ? 'bg-yellow-500' : 'bg-green-500'
-          }`}>
-            <CheckCircle className="w-16 h-16 text-white" />
+          <div className="relative inline-block mb-4">
+            <img 
+              src="/logo.png" 
+              alt="NS Fitness Logo" 
+              className="h-24 w-24 object-contain mx-auto"
+            />
+            <div className={`absolute -bottom-2 -right-2 w-12 h-12 rounded-full flex items-center justify-center animate-bounce ${
+              isLate ? 'bg-yellow-500' : 'bg-green-500'
+            }`}>
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {isLate ? '⏰ Marked as LATE' : 'Check-In Successful!'}

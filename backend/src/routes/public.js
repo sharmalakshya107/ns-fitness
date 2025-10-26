@@ -221,10 +221,11 @@ router.post('/self-checkin', [
     }
 
     // Step 3: Verify geo-location (check if member is at gym)
-    // TEMP: Using home location for testing - https://www.google.com/maps?q=27.542603,76.596084
-    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.542603);
-    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.596084);
-    const allowedRadius = parseFloat(process.env.GYM_RADIUS_METERS || 100);
+    // NS Fitness Gym Location: Madhav's Tower, Jaipur Road, Alwar
+    // Google Maps: https://www.google.com/maps?q=27.544129,76.593373
+    const gymLat = parseFloat(process.env.GYM_LATITUDE || 27.544129);
+    const gymLon = parseFloat(process.env.GYM_LONGITUDE || 76.593373);
+    const allowedRadius = parseFloat(process.env.GYM_RADIUS_METERS || 50);
 
     const distance = calculateDistance(gymLat, gymLon, latitude, longitude);
 
