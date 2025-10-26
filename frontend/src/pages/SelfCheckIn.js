@@ -15,6 +15,8 @@ function SelfCheckIn() {
   const [gettingLocation, setGettingLocation] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     // Auto-detect location when page loads
@@ -30,7 +32,13 @@ function SelfCheckIn() {
       });
     }
 
-    // Listen for PWA install prompt
+    // Detect iOS device
+    const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    
+    setIsIOS(isIOSDevice);
+
+    // Listen for PWA install prompt (Android)
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -40,8 +48,12 @@ function SelfCheckIn() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (isInStandaloneMode) {
       setShowInstallButton(false);
+      setShowIOSInstructions(false);
+    } else if (isIOSDevice) {
+      // Show iOS instructions if on iOS and not installed
+      setShowIOSInstructions(true);
     }
 
     return () => {
@@ -341,7 +353,7 @@ Please:
           <p className="text-gray-600">Self Check-In</p>
         </div>
 
-        {/* Install App Button - PWA */}
+        {/* Install App Button - PWA (Android) */}
         {showInstallButton && (
           <div className="mb-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl shadow-lg p-4 animate-pulse">
             <div className="flex items-center justify-between">
@@ -355,6 +367,32 @@ Please:
               >
                 Install
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* iOS Install Instructions */}
+        {showIOSInstructions && (
+          <div className="mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-2xl shadow-lg p-5">
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">🍎</div>
+              <div className="flex-1">
+                <p className="font-bold text-base mb-2">📱 iPhone Users: Install NS Fitness App</p>
+                <p className="text-xs opacity-90 mb-3">No QR scanning needed after installation!</p>
+                
+                <div className="bg-white bg-opacity-20 rounded-lg p-3 text-xs space-y-2">
+                  <p className="font-semibold text-sm">🔹 Follow these steps:</p>
+                  <ol className="space-y-1.5 pl-4">
+                    <li>1️⃣ Tap the <strong>Share</strong> button 📤 (bottom of Safari)</li>
+                    <li>2️⃣ Scroll down and find <strong>"Add to Home Screen"</strong></li>
+                    <li>3️⃣ Tap <strong>"Add"</strong> (top right corner)</li>
+                    <li>4️⃣ Done! App icon on your home screen! ✅</li>
+                  </ol>
+                  <p className="text-xs opacity-80 mt-2 italic">
+                    ⚠️ Note: Must use Safari browser (not Chrome)
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
