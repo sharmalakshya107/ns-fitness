@@ -17,6 +17,7 @@ function SelfCheckIn() {
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [showManualInstructions, setShowManualInstructions] = useState(false);
 
   useEffect(() => {
     // Auto-detect location when page loads
@@ -43,6 +44,7 @@ function SelfCheckIn() {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallButton(true);
+      setShowManualInstructions(false); // Hide manual instructions if automatic prompt is available
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -51,9 +53,23 @@ function SelfCheckIn() {
     if (isInStandaloneMode) {
       setShowInstallButton(false);
       setShowIOSInstructions(false);
+      setShowManualInstructions(false);
     } else if (isIOSDevice) {
       // Show iOS instructions if on iOS and not installed
       setShowIOSInstructions(true);
+    } else {
+      // For Android devices, wait 2 seconds to see if beforeinstallprompt fires
+      // If it doesn't (old browser/phone), show manual instructions
+      const timer = setTimeout(() => {
+        if (!deferredPrompt && !showInstallButton) {
+          setShowManualInstructions(true);
+        }
+      }, 2000);
+      
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
     }
 
     return () => {
@@ -245,6 +261,32 @@ function SelfCheckIn() {
                   </ol>
                   <p className="text-xs opacity-80 mt-2 italic">
                     ⚠️ Note: Must use Safari browser (not Chrome)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Manual Install Instructions for Old Browsers/Phones */}
+        {showManualInstructions && (
+          <div className="mb-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-lg p-5">
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">📱</div>
+              <div className="flex-1">
+                <p className="font-bold text-base mb-2">Add to Home Screen (Chrome)</p>
+                <p className="text-xs opacity-90 mb-3">Quick access without QR scanning!</p>
+                
+                <div className="bg-white bg-opacity-20 rounded-lg p-3 text-xs space-y-2">
+                  <p className="font-semibold text-sm">🔹 Follow these steps:</p>
+                  <ol className="space-y-1.5 pl-4">
+                    <li>1️⃣ Tap the <strong>3 dots ⋮</strong> menu (top right corner)</li>
+                    <li>2️⃣ Look for <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                    <li>3️⃣ Tap <strong>"Add"</strong> or <strong>"Install"</strong></li>
+                    <li>4️⃣ App icon will appear on home screen! ✅</li>
+                  </ol>
+                  <p className="text-xs opacity-80 mt-2 italic">
+                    💡 If option not visible, your browser may not support this feature. You can still use the website normally!
                   </p>
                 </div>
               </div>
