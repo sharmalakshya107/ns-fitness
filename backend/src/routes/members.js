@@ -20,9 +20,9 @@ router.get('/', authenticateToken, requireSubAdminOrMain, async (req, res) => {
     
     if (search) {
       whereClause[Op.or] = [
-        { name: { [Op.like]: `%${search}%` } },
-        { phone: { [Op.like]: `%${search}%` } },
-        { email: { [Op.like]: `%${search}%` } }
+        { name: { [Op.iLike]: `%${search}%` } },
+        { phone: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } }
       ];
     }
     
@@ -46,7 +46,8 @@ router.get('/', authenticateToken, requireSubAdminOrMain, async (req, res) => {
       ],
       limit,
       offset,
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      logging: false
     });
 
     // Update status for each member before sending
@@ -61,7 +62,8 @@ router.get('/', authenticateToken, requireSubAdminOrMain, async (req, res) => {
         { model: Batch, as: 'batch' },
         { model: Payment, as: 'payments', limit: 1, order: [['createdAt', 'DESC']] }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      logging: false
     });
 
     res.json({

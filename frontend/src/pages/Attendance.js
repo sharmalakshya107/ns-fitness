@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
-import { Calendar, Users, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
+import { Calendar, Users, CheckCircle, XCircle, Clock, Download, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getISTDate } from '../utils/timezone';
 
@@ -11,11 +11,15 @@ const Attendance = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(getISTDate());
   const [selectedBatch, setSelectedBatch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+
 
   useEffect(() => {
     fetchBatches();
     fetchMembers();
     fetchAttendance();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, selectedBatch]);
 
   const fetchBatches = async () => {
@@ -276,7 +280,7 @@ const Attendance = () => {
         return timeA - timeB;
       });
     
-    const selectedBatchName = batches.find(b => b.id == selectedBatch)?.name || 'All Batches';
+    const selectedBatchName = batches.find(b => String(b.id) === String(selectedBatch))?.name || 'All Batches';
     const isToday = selectedDate === new Date().toISOString().split('T')[0];
     const displayDate = new Date(selectedDate).toLocaleDateString('en-IN', { 
       day: '2-digit', month: 'long', year: 'numeric' 
@@ -537,6 +541,15 @@ const Attendance = () => {
     }
   };
 
+  const filteredMembers = members.filter(member => {
+    if (!searchTerm) return true;
+    const searchLow = searchTerm.toLowerCase();
+    return (
+      (member.name && member.name.toLowerCase().includes(searchLow)) ||
+      (member.phone && member.phone.includes(searchTerm))
+    );
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -557,7 +570,127 @@ const Attendance = () => {
 
       {/* Filters */}
       <div className="card">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="label">Search</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-field pl-10"
+                placeholder="Search member..."
+              />
+              
+              {/* Search Dropdown Cards */}
+              {searchTerm && (
+                <div className="absolute z-50 left-0 w-full md:w-[400px] mt-1 bg-white border border-gray-200 rounded-lg shadow-2xl max-h-96 overflow-y-auto">
+                  {filteredMembers.length === 0 ? (
+                    <div className="p-4 text-sm text-gray-500 text-center">
+                      No members found matching "{searchTerm}"
+                    </div>
+                  ) : (
+                    <div className="p-2 space-y-2">
+                      {filteredMembers.map(member => {
+                        const status = getAttendanceStatus(member.id);
+                        const isFutureDate = selectedDate > getISTDate();
+                        
+                        return (
+                          <div key={member.id} className="flex flex-col space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-colors shadow-sm">
+                            <div className="flex items-center justify-between">
+                              <div 
+                                className="flex items-center cursor-pointer w-full group rounded hover:bg-white p-1 transition-colors"
+                                onClick={() => {
+                                  setSearchTerm(''); // Close the dropdown
+                                  const el = document.getElementById(`member-${member.id}`);
+                                  if (el) {
+                                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    el.classList.add('bg-blue-50', 'border-blue-400');
+                                    setTimeout(() => el.classList.remove('bg-blue-50', 'border-blue-400'), 3000);
+                                  }
+                                }}
+                                title="Click to view details in the list below"
+                              >
+                                <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center mr-3 group-hover:bg-primary-200 transition-colors">
+                                  <span className="text-xs font-bold text-primary-600">
+                                    {member.name.charAt(0)}
+                                  </span>
+                                </div>
+                                <div className="w-full">
+                                  <div className="text-sm font-bold text-gray-900 flex flex-wrap items-center gap-1.5 leading-none">
+                                    <span className="group-hover:text-primary-700 transition-colors mr-1">{member.name}</span>
+                                    
+                                    {status === 'present' && <CheckCircle className="h-3.5 w-3.5 text-green-500" />}
+                                    {status === 'absent' && <XCircle className="h-3.5 w-3.5 text-red-500" />}
+                                    {status === 'late' && <Clock className="h-3.5 w-3.5 text-yellow-500" />}
+                                    
+                                    {member.membership_status === 'pending' && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-purple-100 text-purple-700">Trial</span>}
+                                    {member.membership_status === 'active' && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-green-100 text-green-700">Active</span>}
+                                    {member.membership_status === 'expiring_soon' && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-yellow-100 text-yellow-700">Expiring</span>}
+                                    {member.membership_status === 'expired' && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-red-100 text-red-700">Expired</span>}
+                                    {member.membership_status === 'frozen' && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-blue-100 text-blue-700">Frozen</span>}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1 flex flex-wrap items-center gap-x-2 w-full">
+                                    <span>{member.phone}</span>
+                                    {member.membership_status === 'pending' && member.createdAt && (() => {
+                                      const regDateOnly = new Date(new Date(member.createdAt).setHours(0,0,0,0));
+                                      const todayDateOnly = new Date(new Date().setHours(0,0,0,0));
+                                      const daysSinceReg = Math.floor((todayDateOnly - regDateOnly) / (1000 * 60 * 60 * 24)) + 1;
+                                      
+                                      if (daysSinceReg > 3) return <span className="text-red-500 font-semibold text-[10px]">- End: {daysSinceReg - 3}d ago</span>;
+                                      if (daysSinceReg === 3) return <span className="text-orange-500 font-semibold text-[10px]">- Ends TODAY</span>;
+                                      return <span className="text-purple-500 text-[10px] font-medium">- Day {daysSinceReg}/3</span>;
+                                    })()}
+                                    {member.membership_status === 'expired' && member.end_date && (
+                                      <span className="text-red-500 font-semibold text-[10px]">- Exp. {Math.ceil((new Date() - new Date(member.end_date)) / (1000 * 60 * 60 * 24))}d ago</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Quick Action Buttons */}
+                            <div className="flex bg-white rounded-md shadow-sm border border-gray-200 p-1 w-full justify-between">
+                              {isFutureDate ? (
+                                <span className="text-xs text-gray-400 px-3 py-1.5 w-full text-center italic">Future date - view only</span>
+                              ) : member.membership_status === 'expired' || member.membership_status === 'frozen' ? (
+                                <span className="text-xs text-red-500 px-3 py-1.5 w-full text-center flex justify-center items-center gap-1">
+                                  <XCircle className="h-3 w-3" />
+                                  Membership {member.membership_status === 'expired' ? 'Expired' : 'Frozen'}
+                                </span>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => markAttendance(member.id, 'present')}
+                                    className={`flex-1 px-2 py-1 flex justify-center items-center text-xs font-bold rounded transition-colors ${status === 'present' ? 'bg-green-100 text-green-800' : 'hover:bg-gray-100 text-gray-600'}`}
+                                  >
+                                    Present
+                                  </button>
+                                  <button
+                                    onClick={() => markAttendance(member.id, 'absent')}
+                                    className={`flex-1 px-2 py-1 flex justify-center items-center text-xs font-bold rounded transition-colors ${status === 'absent' ? 'bg-red-100 text-red-800' : 'hover:bg-gray-100 text-gray-600'}`}
+                                  >
+                                    Absent
+                                  </button>
+                                  <button
+                                    onClick={() => markAttendance(member.id, 'late')}
+                                    className={`flex-1 px-2 py-1 flex justify-center items-center text-xs font-bold rounded transition-colors ${status === 'late' ? 'bg-yellow-100 text-yellow-800' : 'hover:bg-gray-100 text-gray-600'}`}
+                                  >
+                                    Late
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
           <div>
             <label className="label">Date</label>
             <input
@@ -764,7 +897,7 @@ const Attendance = () => {
             const isFutureDate = selectedDate > getISTDate();
             
             return (
-              <div key={member.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <div key={member.id} id={`member-${member.id}`} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-700">
                 <div className="flex items-center flex-1">
                   <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center mr-4">
                     <span className="text-sm font-medium text-primary-600">
