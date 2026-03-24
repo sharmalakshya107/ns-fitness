@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 import { getISTDate } from '../utils/timezone';
 import { 
@@ -32,7 +32,7 @@ const Payments = () => {
     notes: ''
   });
 
-  const fetchPayments = useCallback(async () => {
+  const fetchPayments = async () => {
     try {
       const token = localStorage.getItem('token');
       const params = new URLSearchParams();
@@ -63,7 +63,7 @@ const Payments = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, filterMethod, filterDuration, startDate, endDate, currentPage]);
+  };
 
   useEffect(() => {
     fetchPayments();
@@ -74,23 +74,19 @@ const Payments = () => {
   // Debounced search - waits 800ms after user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCurrentPage(1); // Reset to page 1 when searching
+      setCurrentPage(1); // Reset to page 1 when searching or filtering
       fetchPayments();
     }, 800); // Wait 800ms after user stops typing
 
     return () => clearTimeout(timer);
-  }, [searchTerm, fetchPayments]);
-
-  // Fetch when filters change (no debounce for filters)
-  useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 when filters change
-    fetchPayments();
-  }, [filterMethod, filterDuration, startDate, endDate, fetchPayments]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, filterMethod, filterDuration, startDate, endDate]);
 
   // Fetch when page changes
   useEffect(() => {
     fetchPayments();
-  }, [currentPage, fetchPayments]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   const fetchMembers = async () => {
     try {
@@ -664,6 +660,10 @@ const Payments = () => {
             
             <!-- Footer -->
             <div class="footer">
+              <div style="margin-bottom: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <p style="margin: 2px 0; font-weight: 700; color: #333; font-size: 11px;">Government of India MSME Registered (Micro Enterprise)</p>
+                <p style="margin: 2px 0; font-weight: 700; font-size: 11px; color: #000;">UDYAM-RJ-02-0114106</p>
+              </div>
               <p>Thank you for your payment!</p>
               <p>This is a computer-generated receipt. For any queries, please contact gym administration.</p>
               <p>Generated: ${new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
