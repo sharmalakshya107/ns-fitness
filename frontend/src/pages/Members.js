@@ -7,12 +7,6 @@ import {
   Filter, 
   Edit, 
   Trash2, 
-  Eye,
-  Phone,
-  Mail,
-  Calendar,
-  MapPin,
-  Users,
   Download,
   Snowflake,
   Play
@@ -63,6 +57,7 @@ const Members = () => {
   useEffect(() => {
     fetchMembers();
     fetchBatches();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Debounced search - waits 800ms after user stops typing
@@ -73,11 +68,13 @@ const Members = () => {
     }, 800);
 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, filterStatus, filterBatch]);
 
   // Fetch members when page changes
   useEffect(() => {
     fetchMembers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const fetchMembers = async () => {

@@ -13,7 +13,7 @@ import {
   Lock,
   Cake
 } from 'lucide-react';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
 import {
   Chart as ChartJS,

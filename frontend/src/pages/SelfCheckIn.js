@@ -16,7 +16,6 @@ function SelfCheckIn() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
   const [showManualInstructions, setShowManualInstructions] = useState(false);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ function SelfCheckIn() {
     const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     
-    setIsIOS(isIOSDevice);
+    // React state for isIOS removed because it was unused elsewhere.
 
     // Listen for PWA install prompt (Android)
     const handleBeforeInstallPrompt = (e) => {
@@ -75,6 +74,7 @@ function SelfCheckIn() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleInstallClick = async () => {

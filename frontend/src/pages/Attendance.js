@@ -850,7 +850,7 @@ const Attendance = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-gray-900">
             Attendance for {new Date(selectedDate).toLocaleDateString()}
-            {selectedBatch && ` - ${batches.find(b => b.id == selectedBatch)?.name || 'Selected Batch'}`}
+            {selectedBatch && ` - ${batches.find(b => String(b.id) === String(selectedBatch))?.name || 'Selected Batch'}`}
           </h3>
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-500">
